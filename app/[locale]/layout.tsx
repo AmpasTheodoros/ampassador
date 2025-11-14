@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://ampassador.com";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.ampassador.com";
 
   // Get translations for metadata
   const messages = await import(`@/messages/${locale}.json`);
