@@ -1,50 +1,52 @@
 import { Scale, Cpu, TrendingUp, Users, Zap, Shield } from "lucide-react";
-
 import { Card, CardContent } from "@/components/ui/card";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const services = [
-  {
-    icon: Scale,
-    title: "Legal Process Optimization",
-    description: "Streamline workflows and reduce operational costs through intelligent automation and process design",
-  },
-  {
-    icon: Cpu,
-    title: "Technology Implementation",
-    description: "Deploy and integrate cutting-edge legal tech solutions tailored to your organization's needs",
-  },
-  {
-    icon: TrendingUp,
-    title: "Strategic Consulting",
-    description: "Develop comprehensive digital transformation strategies for legal departments and law firms",
-  },
-  {
-    icon: Users,
-    title: "Team Training & Adoption",
-    description: "Ensure successful technology adoption through comprehensive training and change management",
-  },
-  {
-    icon: Zap,
-    title: "Innovation & AI",
-    description: "Leverage artificial intelligence and machine learning to enhance legal service delivery",
-  },
-  {
-    icon: Shield,
-    title: "Compliance & Security",
-    description: "Implement robust security measures and ensure compliance with industry regulations",
-  },
-];
-
-const Services = () => {
+const Services = ({ locale }: { locale: Locale }) => {
+  const t = getTranslations(locale);
+  
+  const services = [
+    {
+      icon: Scale,
+      title: t("services.items.processOptimization.title"),
+      description: t("services.items.processOptimization.description"),
+    },
+    {
+      icon: Cpu,
+      title: t("services.items.techImplementation.title"),
+      description: t("services.items.techImplementation.description"),
+    },
+    {
+      icon: TrendingUp,
+      title: t("services.items.strategicConsulting.title"),
+      description: t("services.items.strategicConsulting.description"),
+    },
+    {
+      icon: Users,
+      title: t("services.items.training.title"),
+      description: t("services.items.training.description"),
+    },
+    {
+      icon: Zap,
+      title: t("services.items.innovation.title"),
+      description: t("services.items.innovation.description"),
+    },
+    {
+      icon: Shield,
+      title: t("services.items.compliance.title"),
+      description: t("services.items.compliance.description"),
+    },
+  ];
   return (
     <section id="services" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Comprehensive LegalTech Solutions
+            {t("services.title")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Bridging the gap between legal expertise and technological innovation
+            {t("services.subtitle")}
           </p>
         </div>
 

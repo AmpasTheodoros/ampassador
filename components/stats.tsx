@@ -1,23 +1,27 @@
-const stats = [
-  {
-    value: "50+",
-    label: "Projects Delivered",
-  },
-  {
-    value: "100%",
-    label: "On-Time Delivery",
-  },
-  {
-    value: "98%",
-    label: "Client Satisfaction",
-  },
-  {
-    value: "$10M+",
-    label: "Cost Savings Generated",
-  },
-];
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const Stats = () => {
+const Stats = ({ locale }: { locale: Locale }) => {
+  const t = getTranslations(locale);
+  
+  const stats = [
+    {
+      value: "50+",
+      label: t("stats.projectsDelivered"),
+    },
+    {
+      value: "100%",
+      label: t("stats.onTimeDelivery"),
+    },
+    {
+      value: "98%",
+      label: t("stats.clientSatisfaction"),
+    },
+    {
+      value: "$10M+",
+      label: t("stats.costSavingsGenerated"),
+    },
+  ];
   return (
     <section className="py-20 bg-primary text-primary-foreground relative overflow-hidden">
       {/* Background pattern */}
@@ -28,10 +32,10 @@ const Stats = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Proven Track Record in Legal Technology
+            {t("stats.title")}
           </h2>
           <p className="text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-            Delivering measurable results through innovative solutions
+            {t("stats.subtitle")}
           </p>
         </div>
 

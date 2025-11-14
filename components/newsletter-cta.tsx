@@ -7,9 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { emailCaptureSchema, type EmailCaptureData } from "@/lib/validations";
 import { useToast } from "@/hooks/use-toast";
 import { Mail } from "lucide-react";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const NewsletterCTA = () => {
+const NewsletterCTA = ({ locale }: { locale: Locale }) => {
   const { toast } = useToast();
+  const t = getTranslations(locale);
 
   const {
     register,
@@ -36,8 +39,8 @@ const NewsletterCTA = () => {
         // Handle duplicate email error gracefully
         if (result.error === "DUPLICATE_EMAIL" || response.status === 409) {
           toast({
-            title: "Already Subscribed",
-            description: "This email is already on our newsletter list.",
+            title: t("newsletter.alreadySubscribedTitle"),
+            description: t("newsletter.alreadySubscribedDescription"),
           });
           reset();
           return;
@@ -46,16 +49,16 @@ const NewsletterCTA = () => {
       }
 
       toast({
-        title: "Successfully Subscribed!",
-        description: "You'll receive weekly insights on legal technology and operations.",
+        title: t("newsletter.successTitle"),
+        description: t("newsletter.successDescription"),
       });
 
       reset();
     } catch (error) {
       console.error("Error subscribing to newsletter:", error);
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: t("newsletter.errorTitle"),
+        description: t("newsletter.errorDescription"),
         variant: "destructive",
       });
     }
@@ -70,10 +73,10 @@ const NewsletterCTA = () => {
           </div>
 
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Stay Ahead of the Curve
+            {t("newsletter.title")}
           </h2>
           <p className="text-xl text-primary-foreground/90 mb-8">
-            Get weekly insights on legal technology trends, best practices, and industry innovations
+            {t("newsletter.subtitle")}
           </p>
           <form
             onSubmit={handleSubmit(onSubmit)}
@@ -83,7 +86,7 @@ const NewsletterCTA = () => {
               <Input
                 {...register("email")}
                 type="email"
-                placeholder="Enter your email address"
+                placeholder={t("newsletter.emailPlaceholder")}
                 className="h-14 bg-card text-foreground text-lg"
                 disabled={isSubmitting}
               />
@@ -98,11 +101,11 @@ const NewsletterCTA = () => {
               className="h-14 px-8 text-lg whitespace-nowrap"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Subscribing..." : "Subscribe"}
+              {isSubmitting ? t("newsletter.subscribing") : t("newsletter.submitButton")}
             </Button>
           </form>
           <p className="text-sm text-primary-foreground/70 mt-4">
-            Join 2,500+ legal professionals • Unsubscribe anytime • No spam, ever
+            {t("newsletter.footer")}
           </p>
         </div>
       </div>

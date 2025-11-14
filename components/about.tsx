@@ -1,49 +1,47 @@
 import { Award, Briefcase, Users, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const highlights = [
-  {
-    icon: Award,
-    value: "100%",
-    label: "On-Time Delivery",
-  },
-  {
-    icon: Briefcase,
-    value: "50+",
-    label: "Projects Completed",
-  },
-  {
-    icon: Users,
-    value: "100+",
-    label: "Clients Served",
-  },
-  {
-    icon: TrendingUp,
-    value: "$10M+",
-    label: "Cost Savings",
-  },
-];
-
-const About = () => {
+const About = ({ locale }: { locale: Locale }) => {
+  const t = getTranslations(locale);
+  
+  const highlights = [
+    {
+      icon: Award,
+      value: "100%",
+      label: t("about.onTimeDelivery"),
+    },
+    {
+      icon: Briefcase,
+      value: "50+",
+      label: t("about.projectsCompleted"),
+    },
+    {
+      icon: Users,
+      value: "100+",
+      label: t("about.clientsServed"),
+    },
+    {
+      icon: TrendingUp,
+      value: "$10M+",
+      label: t("about.costSavings"),
+    },
+  ];
   return (
     <section id="about" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Bridging Law and Technology
+              {t("about.title")}
             </h2>
             <div className="space-y-4 text-lg text-muted-foreground">
               <p>
-                At the intersection of legal practice and technology,
-                I've helped organizations transform their legal operations through strategic technology
-                implementation and process optimization.
+                {t("about.paragraph1")}
               </p>
               <p>
-                My approach combines deep legal industry knowledge with cutting-edge technology expertise
-                to deliver solutions that are both practical and transformative. From global law firms to
-                corporate legal departments, I've consistently delivered measurable results that drive
-                efficiency, reduce costs, and enhance service delivery.
+                {t("about.paragraph2")}
               </p>
             </div>
           </div>

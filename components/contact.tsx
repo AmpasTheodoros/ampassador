@@ -8,9 +8,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { contactFormSchema, type ContactFormData } from "@/lib/validations";
 import { useToast } from "@/hooks/use-toast";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const Contact = () => {
+const Contact = ({ locale }: { locale: Locale }) => {
   const { toast } = useToast();
+  const t = getTranslations(locale);
 
   const {
     register,
@@ -38,16 +41,16 @@ const Contact = () => {
       }
 
       toast({
-        title: "Message Sent!",
-        description: "Thank you for reaching out. I'll respond within 24 hours.",
+        title: t("contact.successTitle"),
+        description: t("contact.successDescription"),
       });
 
       reset();
     } catch (error) {
       console.error("Error submitting contact form:", error);
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: t("contact.errorTitle"),
+        description: t("contact.errorDescription"),
         variant: "destructive",
       });
     }
@@ -58,9 +61,9 @@ const Contact = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Let's Work Together</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{t("contact.title")}</h2>
             <p className="text-xl text-muted-foreground">
-              Ready to transform your legal operations? Get in touch to discuss your needs
+              {t("contact.subtitle")}
             </p>
           </div>
 
@@ -69,7 +72,7 @@ const Contact = () => {
             <div>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
-                  <Input {...register("name")} placeholder="Your Name *" className="h-12" disabled={isSubmitting} />
+                  <Input {...register("name")} placeholder={t("contact.namePlaceholder")} className="h-12" disabled={isSubmitting} />
                   {errors.name && <p className="text-sm text-destructive mt-1">{errors.name.message}</p>}
                 </div>
 
@@ -77,7 +80,7 @@ const Contact = () => {
                   <Input
                     {...register("email")}
                     type="email"
-                    placeholder="Email Address *"
+                    placeholder={t("contact.emailPlaceholder")}
                     className="h-12"
                     disabled={isSubmitting}
                   />
@@ -87,7 +90,7 @@ const Contact = () => {
                 <div>
                   <Input
                     {...register("company")}
-                    placeholder="Company (Optional)"
+                    placeholder={t("contact.companyPlaceholder")}
                     className="h-12"
                     disabled={isSubmitting}
                   />
@@ -97,7 +100,7 @@ const Contact = () => {
                 <div>
                   <Textarea
                     {...register("message")}
-                    placeholder="Tell me about your project or challenge... *"
+                    placeholder={t("contact.messagePlaceholder")}
                     className="min-h-[150px]"
                     disabled={isSubmitting}
                   />
@@ -105,7 +108,7 @@ const Contact = () => {
                 </div>
 
                 <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {isSubmitting ? t("contact.sending") : t("contact.submitButton")}
                 </Button>
               </form>
             </div>
@@ -113,7 +116,7 @@ const Contact = () => {
             {/* Contact Information */}
             <div className="space-y-8">
               <div>
-                <h3 className="text-2xl font-semibold text-foreground mb-6">Connect With Me</h3>
+                <h3 className="text-2xl font-semibold text-foreground mb-6">{t("contact.connectTitle")}</h3>
                 <div className="space-y-4">
                   <a
                     href="mailto:info@ampassador.com"
@@ -123,7 +126,7 @@ const Contact = () => {
                       <Mail className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Email</p>
+                      <p className="font-medium text-foreground">{t("contact.email")}</p>
                       <p>info@ampassador.com</p>
                     </div>
                   </a>
@@ -136,7 +139,7 @@ const Contact = () => {
                       <Phone className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Phone</p>
+                      <p className="font-medium text-foreground">{t("contact.phone")}</p>
                       <p>+30 697 810 0951</p>
                     </div>
                   </a>
@@ -151,17 +154,17 @@ const Contact = () => {
                       <Linkedin className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">LinkedIn</p>
-                      <p>Connect professionally</p>
+                      <p className="font-medium text-foreground">{t("contact.linkedin")}</p>
+                      <p>{t("contact.linkedinText")}</p>
                     </div>
                   </a>
                 </div>
               </div>
 
               <div className="p-6 rounded-lg bg-card border border-border">
-                <h4 className="font-semibold text-foreground mb-2">Response Time</h4>
+                <h4 className="font-semibold text-foreground mb-2">{t("contact.responseTimeTitle")}</h4>
                 <p className="text-muted-foreground">
-                  I typically respond to inquiries within 24 hours during business days.
+                  {t("contact.responseTimeDescription")}
                 </p>
               </div>
             </div>

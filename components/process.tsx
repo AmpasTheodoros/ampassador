@@ -1,38 +1,41 @@
 import { Search, Lightbulb, Cog, Rocket } from "lucide-react";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const steps = [
-  {
-    icon: Search,
-    title: "Discovery & Analysis",
-    description: "Deep dive into your current processes, pain points, and goals to identify opportunities for improvement",
-  },
-  {
-    icon: Lightbulb,
-    title: "Strategy Development",
-    description: "Create a customized roadmap with clear milestones and measurable outcomes aligned with your objectives",
-  },
-  {
-    icon: Cog,
-    title: "Implementation",
-    description: "Deploy solutions with minimal disruption, ensuring seamless integration with existing systems",
-  },
-  {
-    icon: Rocket,
-    title: "Optimization & Scale",
-    description: "Continuously monitor, refine, and scale solutions to maximize ROI and long-term success",
-  },
-];
-
-const Process = () => {
+const Process = ({ locale }: { locale: Locale }) => {
+  const t = getTranslations(locale);
+  
+  const steps = [
+    {
+      icon: Search,
+      title: t("process.steps.discovery.title"),
+      description: t("process.steps.discovery.description"),
+    },
+    {
+      icon: Lightbulb,
+      title: t("process.steps.strategy.title"),
+      description: t("process.steps.strategy.description"),
+    },
+    {
+      icon: Cog,
+      title: t("process.steps.implementation.title"),
+      description: t("process.steps.implementation.description"),
+    },
+    {
+      icon: Rocket,
+      title: t("process.steps.optimization.title"),
+      description: t("process.steps.optimization.description"),
+    },
+  ];
   return (
     <section id="process" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            A Proven Approach
+            {t("process.title")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            From concept to implementation and beyond
+            {t("process.subtitle")}
           </p>
         </div>
 

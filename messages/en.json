@@ -1,0 +1,186 @@
+{
+  "header": {
+    "logo": "Ampassador",
+    "about": "About",
+    "services": "Services",
+    "process": "Process",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "title": "Transforming Legal Operations Through Technology",
+    "subtitle": "Expert in LegalTech solutions, process optimization, and digital transformation for modern legal teams",
+    "projects": "50+ Projects",
+    "saved": "$10M+ Saved",
+    "certified": "Expert Certified",
+    "formTitle": "Schedule Your Free Consultation",
+    "formDescription": "Let's discuss how technology can transform your legal operations",
+    "namePlaceholder": "Your Name *",
+    "emailPlaceholder": "Work Email *",
+    "companyPlaceholder": "Company/Organization *",
+    "phonePlaceholder": "Phone Number (Optional)",
+    "submitButton": "Book Free Consultation",
+    "submitting": "Submitting...",
+    "formFooter": "Free consultation • No commitment • 24h response time",
+    "successTitle": "Request Received!",
+    "successDescription": "I'll get back to you within 24 hours to schedule your consultation.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again."
+  },
+  "about": {
+    "title": "Bridging Law and Technology",
+    "paragraph1": "At the intersection of legal practice and technology, I've helped organizations transform their legal operations through strategic technology implementation and process optimization.",
+    "paragraph2": "My approach combines deep legal industry knowledge with cutting-edge technology expertise to deliver solutions that are both practical and transformative. From global law firms to corporate legal departments, I've consistently delivered measurable results that drive efficiency, reduce costs, and enhance service delivery.",
+    "onTimeDelivery": "On-Time Delivery",
+    "projectsCompleted": "Projects Completed",
+    "clientsServed": "Clients Served",
+    "costSavings": "Cost Savings"
+  },
+  "services": {
+    "title": "Comprehensive LegalTech Solutions",
+    "subtitle": "Bridging the gap between legal expertise and technological innovation",
+    "items": {
+      "processOptimization": {
+        "title": "Legal Process Optimization",
+        "description": "Streamline workflows and reduce operational costs through intelligent automation and process design"
+      },
+      "techImplementation": {
+        "title": "Technology Implementation",
+        "description": "Deploy and integrate cutting-edge legal tech solutions tailored to your organization's needs"
+      },
+      "strategicConsulting": {
+        "title": "Strategic Consulting",
+        "description": "Develop comprehensive digital transformation strategies for legal departments and law firms"
+      },
+      "training": {
+        "title": "Team Training & Adoption",
+        "description": "Ensure successful technology adoption through comprehensive training and change management"
+      },
+      "innovation": {
+        "title": "Innovation & AI",
+        "description": "Leverage artificial intelligence and machine learning to enhance legal service delivery"
+      },
+      "compliance": {
+        "title": "Compliance & Security",
+        "description": "Implement robust security measures and ensure compliance with industry regulations"
+      }
+    }
+  },
+  "process": {
+    "title": "A Proven Approach",
+    "subtitle": "From concept to implementation and beyond",
+    "steps": {
+      "discovery": {
+        "title": "Discovery & Analysis",
+        "description": "Deep dive into your current processes, pain points, and goals to identify opportunities for improvement"
+      },
+      "strategy": {
+        "title": "Strategy Development",
+        "description": "Create a customized roadmap with clear milestones and measurable outcomes aligned with your objectives"
+      },
+      "implementation": {
+        "title": "Implementation",
+        "description": "Deploy solutions with minimal disruption, ensuring seamless integration with existing systems"
+      },
+      "optimization": {
+        "title": "Optimization & Scale",
+        "description": "Continuously monitor, refine, and scale solutions to maximize ROI and long-term success"
+      }
+    }
+  },
+  "testimonials": {
+    "title": "Client Success Stories",
+    "subtitle": "Trusted by leading legal professionals and organizations",
+    "items": {
+      "testimonial1": {
+        "quote": "Transformed our legal operations completely. We've seen a 40% reduction in processing time and significantly improved team satisfaction.",
+        "author": "Sarah Johnson",
+        "position": "General Counsel",
+        "company": "TechCorp International"
+      },
+      "testimonial2": {
+        "quote": "The strategic insights and technology implementation were game-changing. Our firm is now equipped to handle the demands of modern legal practice.",
+        "author": "Michael Chen",
+        "position": "Managing Partner",
+        "company": "Chen & Associates"
+      },
+      "testimonial3": {
+        "quote": "An exceptional partner in our digital transformation journey. The ROI exceeded our expectations within the first year.",
+        "author": "Emily Rodriguez",
+        "position": "Chief Operations Officer",
+        "company": "Global Legal Services"
+      }
+    }
+  },
+  "contact": {
+    "title": "Let's Work Together",
+    "subtitle": "Ready to transform your legal operations? Get in touch to discuss your needs",
+    "namePlaceholder": "Your Name *",
+    "emailPlaceholder": "Email Address *",
+    "companyPlaceholder": "Company (Optional)",
+    "messagePlaceholder": "Tell me about your project or challenge... *",
+    "submitButton": "Send Message",
+    "sending": "Sending...",
+    "connectTitle": "Connect With Me",
+    "email": "Email",
+    "phone": "Phone",
+    "linkedin": "LinkedIn",
+    "linkedinText": "Connect professionally",
+    "responseTimeTitle": "Response Time",
+    "responseTimeDescription": "I typically respond to inquiries within 24 hours during business days.",
+    "successTitle": "Message Sent!",
+    "successDescription": "Thank you for reaching out. I'll respond within 24 hours.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again."
+  },
+  "footer": {
+    "tagline": "Transforming legal operations through innovative technology solutions",
+    "quickLinks": "Quick Links",
+    "connect": "Connect",
+    "copyright": "All rights reserved."
+  },
+  "stats": {
+    "title": "Proven Track Record in Legal Technology",
+    "subtitle": "Delivering measurable results through innovative solutions",
+    "projectsDelivered": "Projects Delivered",
+    "onTimeDelivery": "On-Time Delivery",
+    "clientSatisfaction": "Client Satisfaction",
+    "costSavingsGenerated": "Cost Savings Generated"
+  },
+  "audit": {
+    "title": "Get Your Free Legal Operations Audit",
+    "subtitle": "Receive a comprehensive analysis of your current processes and improvement opportunities",
+    "processEfficiencyTitle": "Process Efficiency Analysis",
+    "processEfficiencyDescription": "Identify bottlenecks and optimization opportunities in your workflows",
+    "techStackTitle": "Technology Stack Review",
+    "techStackDescription": "Evaluate your current tools and identify gaps or redundancies",
+    "costSavingsTitle": "Cost Savings Projection",
+    "costSavingsDescription": "Get an estimated ROI for implementing recommended improvements",
+    "websitePlaceholder": "Your Website URL *",
+    "namePlaceholder": "Your Name *",
+    "emailPlaceholder": "Work Email *",
+    "submitButton": "Get Free Audit Report",
+    "processing": "Processing...",
+    "footer": "No credit card required • Delivered in 48 hours • 100% confidential",
+    "successTitle": "Audit Request Received!",
+    "successDescription": "Your free legal operations audit report will be delivered within 48 hours.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again."
+  },
+  "newsletter": {
+    "title": "Stay Ahead of the Curve",
+    "subtitle": "Get weekly insights on legal technology trends, best practices, and industry innovations",
+    "emailPlaceholder": "Enter your email address",
+    "submitButton": "Subscribe",
+    "subscribing": "Subscribing...",
+    "footer": "Join 2,500+ legal professionals • Unsubscribe anytime • No spam, ever",
+    "successTitle": "Successfully Subscribed!",
+    "successDescription": "You'll receive weekly insights on legal technology and operations.",
+    "alreadySubscribedTitle": "Already Subscribed",
+    "alreadySubscribedDescription": "This email is already on our newsletter list.",
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. Please try again."
+  }
+}
+

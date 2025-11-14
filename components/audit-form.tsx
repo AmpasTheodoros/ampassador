@@ -7,9 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { auditFormSchema, type AuditFormData } from "@/lib/validations";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle2 } from "lucide-react";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const AuditForm = () => {
+const AuditForm = ({ locale }: { locale: Locale }) => {
   const { toast } = useToast();
+  const t = getTranslations(locale);
 
   const {
     register,
@@ -37,16 +40,16 @@ const AuditForm = () => {
       }
 
       toast({
-        title: "Audit Request Received!",
-        description: "Your free legal operations audit report will be delivered within 48 hours.",
+        title: t("audit.successTitle"),
+        description: t("audit.successDescription"),
       });
 
       reset();
     } catch (error) {
       console.error("Error submitting audit request:", error);
       toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
+        title: t("audit.errorTitle"),
+        description: t("audit.errorDescription"),
         variant: "destructive",
       });
     }
@@ -63,10 +66,10 @@ const AuditForm = () => {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Get Your Free Legal Operations Audit
+              {t("audit.title")}
             </h2>
             <p className="text-xl text-primary-foreground/90">
-              Receive a comprehensive analysis of your current processes and improvement opportunities
+              {t("audit.subtitle")}
             </p>
           </div>
 
@@ -75,9 +78,9 @@ const AuditForm = () => {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-6 w-6 text-accent shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Process Efficiency Analysis</h3>
+                  <h3 className="font-semibold mb-1">{t("audit.processEfficiencyTitle")}</h3>
                   <p className="text-primary-foreground/80 text-sm">
-                    Identify bottlenecks and optimization opportunities in your workflows
+                    {t("audit.processEfficiencyDescription")}
                   </p>
                 </div>
               </div>
@@ -85,9 +88,9 @@ const AuditForm = () => {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-6 w-6 text-accent shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Technology Stack Review</h3>
+                  <h3 className="font-semibold mb-1">{t("audit.techStackTitle")}</h3>
                   <p className="text-primary-foreground/80 text-sm">
-                    Evaluate your current tools and identify gaps or redundancies
+                    {t("audit.techStackDescription")}
                   </p>
                 </div>
               </div>
@@ -95,9 +98,9 @@ const AuditForm = () => {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="h-6 w-6 text-accent shrink-0 mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Cost Savings Projection</h3>
+                  <h3 className="font-semibold mb-1">{t("audit.costSavingsTitle")}</h3>
                   <p className="text-primary-foreground/80 text-sm">
-                    Get an estimated ROI for implementing recommended improvements
+                    {t("audit.costSavingsDescription")}
                   </p>
                 </div>
               </div>
@@ -107,7 +110,7 @@ const AuditForm = () => {
               <div>
                 <Input
                   {...register("website")}
-                  placeholder="Your Website URL *"
+                  placeholder={t("audit.websitePlaceholder")}
                   className="h-12 bg-card text-foreground"
                   disabled={isSubmitting}
                 />
@@ -119,7 +122,7 @@ const AuditForm = () => {
               <div>
                 <Input
                   {...register("name")}
-                  placeholder="Your Name *"
+                  placeholder={t("audit.namePlaceholder")}
                   className="h-12 bg-card text-foreground"
                   disabled={isSubmitting}
                 />
@@ -132,7 +135,7 @@ const AuditForm = () => {
                 <Input
                   {...register("email")}
                   type="email"
-                  placeholder="Work Email *"
+                  placeholder={t("audit.emailPlaceholder")}
                   className="h-12 bg-card text-foreground"
                   disabled={isSubmitting}
                 />
@@ -148,11 +151,11 @@ const AuditForm = () => {
                 className="w-full text-lg"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Processing..." : "Get Free Audit Report"}
+                {isSubmitting ? t("audit.processing") : t("audit.submitButton")}
               </Button>
 
               <p className="text-xs text-primary-foreground/70 text-center">
-                No credit card required • Delivered in 48 hours • 100% confidential
+                {t("audit.footer")}
               </p>
             </form>
           </div>

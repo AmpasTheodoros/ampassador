@@ -1,38 +1,43 @@
 import { Card, CardContent } from "@/components/ui/card";
-
 import { Star } from "lucide-react";
+import { getTranslations, getNestedTranslation } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
-const testimonials = [
-  {
-    quote: "Transformed our legal operations completely. We've seen a 40% reduction in processing time and significantly improved team satisfaction.",
-    author: "Sarah Johnson",
-    position: "General Counsel",
-    company: "TechCorp International",
-  },
-  {
-    quote: "The strategic insights and technology implementation were game-changing. Our firm is now equipped to handle the demands of modern legal practice.",
-    author: "Michael Chen",
-    position: "Managing Partner",
-    company: "Chen & Associates",
-  },
-  {
-    quote: "An exceptional partner in our digital transformation journey. The ROI exceeded our expectations within the first year.",
-    author: "Emily Rodriguez",
-    position: "Chief Operations Officer",
-    company: "Global Legal Services",
-  },
-];
-
-const Testimonials = () => {
+const Testimonials = ({ locale }: { locale: Locale }) => {
+  const t = getTranslations(locale);
+  const testimonial1 = getNestedTranslation(locale, "testimonials.items.testimonial1");
+  const testimonial2 = getNestedTranslation(locale, "testimonials.items.testimonial2");
+  const testimonial3 = getNestedTranslation(locale, "testimonials.items.testimonial3");
+  
+  const testimonials = [
+    {
+      quote: testimonial1.quote,
+      author: testimonial1.author,
+      position: testimonial1.position,
+      company: testimonial1.company,
+    },
+    {
+      quote: testimonial2.quote,
+      author: testimonial2.author,
+      position: testimonial2.position,
+      company: testimonial2.company,
+    },
+    {
+      quote: testimonial3.quote,
+      author: testimonial3.author,
+      position: testimonial3.position,
+      company: testimonial3.company,
+    },
+  ];
   return (
     <section id="testimonials" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Client Success Stories
+            {t("testimonials.title")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Trusted by leading legal professionals and organizations
+            {t("testimonials.subtitle")}
           </p>
         </div>
 
