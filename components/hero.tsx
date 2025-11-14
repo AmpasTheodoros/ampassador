@@ -67,13 +67,13 @@ const Hero = ({ locale }: { locale: Locale }) => {
 
       {/* Content */}
       <div className="container relative z-10 mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left Column - Content */}
-          <div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight">
+          <div className="overflow-hidden">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6 leading-tight break-words">
               {t("hero.title")}
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8">
+            <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 break-words">
               {t("hero.subtitle")}
             </p>
             <div className="flex flex-wrap gap-4 text-primary-foreground/80">
@@ -93,11 +93,11 @@ const Hero = ({ locale }: { locale: Locale }) => {
           </div>
 
           {/* Right Column - Lead Form */}
-          <Card className="p-8 bg-card border-none shadow-2xl">
-            <h3 className="text-2xl font-bold text-foreground mb-2">
+          <Card className="p-8 bg-card border-none shadow-2xl overflow-hidden">
+            <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2 break-words">
               {t("hero.formTitle")}
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-sm md:text-base text-muted-foreground mb-6 break-words">
               {t("hero.formDescription")}
             </p>
 
@@ -152,13 +152,13 @@ const Hero = ({ locale }: { locale: Locale }) => {
                 type="submit"
                 variant="hero"
                 size="lg"
-                className="w-full text-lg"
+                className="w-full text-base md:text-lg break-words"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? t("hero.submitting") : t("hero.submitButton")}
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <span className="break-words">{isSubmitting ? t("hero.submitting") : t("hero.submitButton")}</span>
+                <ArrowRight className="ml-2 h-5 w-5 flex-shrink-0" />
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-xs text-muted-foreground text-center break-words px-2">
                 {t("hero.formFooter")}
               </p>
             </form>
