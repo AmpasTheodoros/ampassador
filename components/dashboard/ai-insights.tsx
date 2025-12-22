@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireOrgId } from "@/lib/auth";
 import { AlertTriangle, FileText, Clock, Sparkles } from "lucide-react";
 import { Prisma } from "@prisma/client";
+import { cn } from "@/lib/utils";
 // Helper function to format time until deadline
 function formatTimeUntil(date: Date): string {
   const now = new Date();
@@ -110,30 +111,26 @@ export async function AIInsights() {
               return (
                 <div
                   key={deadline.id}
-                  className={`
-                    p-3 border-l-4 rounded transition-colors
-                    ${
-                      isUrgent
-                        ? "bg-amber-50 dark:bg-amber-950/20 border-amber-400 dark:border-amber-500"
-                        : "bg-blue-50 dark:bg-blue-950/20 border-blue-400 dark:border-blue-500"
-                    }
-                  `}
+                  className={cn(
+                    "p-3 border-l-4 rounded transition-colors",
+                    isUrgent
+                      ? "bg-destructive/10 border-destructive"
+                      : "bg-accent/10 border-accent"
+                  )}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {isUrgent && (
-                          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                          <AlertTriangle className="h-4 w-4 text-destructive" />
                         )}
                         <p
-                          className={`
-                            text-sm font-medium
-                            ${
-                              isUrgent
-                                ? "text-amber-800 dark:text-amber-200"
-                                : "text-blue-800 dark:text-blue-200"
-                            }
-                          `}
+                          className={cn(
+                            "text-sm font-medium",
+                            isUrgent
+                              ? "text-destructive"
+                              : "text-accent"
+                          )}
                         >
                           {isUrgent
                             ? `Προσοχή: Προθεσμία σε ${Math.round(hoursUntilDeadline)}h`
@@ -141,26 +138,22 @@ export async function AIInsights() {
                         </p>
                       </div>
                       <p
-                        className={`
-                          text-xs
-                          ${
-                            isUrgent
-                              ? "text-amber-700 dark:text-amber-300"
-                              : "text-blue-700 dark:text-blue-300"
-                          }
-                        `}
+                        className={cn(
+                          "text-xs",
+                          isUrgent
+                            ? "text-destructive/80"
+                            : "text-accent/80"
+                        )}
                       >
                         {deadline.matter?.title || "Δεν συνδέεται με υπόθεση"}
                       </p>
                       <p
-                        className={`
-                          text-xs mt-1
-                          ${
-                            isUrgent
-                              ? "text-amber-600 dark:text-amber-400"
-                              : "text-blue-600 dark:text-blue-400"
-                          }
-                        `}
+                        className={cn(
+                          "text-xs mt-1",
+                          isUrgent
+                            ? "text-destructive/70"
+                            : "text-accent/70"
+                        )}
                       >
                         {deadline.title}
                       </p>
@@ -186,23 +179,23 @@ export async function AIInsights() {
               return (
                 <div
                   key={doc.id}
-                  className="p-3 bg-blue-50 dark:bg-blue-950/20 border-l-4 border-blue-400 dark:border-blue-500 rounded"
+                  className="p-3 bg-accent/10 border-l-4 border-accent rounded"
                 >
                   <div className="flex items-start gap-2 mb-1">
-                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5" />
-                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                    <FileText className="h-4 w-4 text-accent mt-0.5" />
+                    <p className="text-sm font-medium text-accent">
                       Νέο Έγγραφο Αναλύθηκε
                     </p>
                   </div>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 mb-1">
+                  <p className="text-xs text-accent/80 mb-1">
                     {doc.fileName}
                   </p>
                   {doc.matter && (
-                    <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">
+                    <p className="text-xs text-accent/70 mb-1">
                       Υπόθεση: {doc.matter.title}
                     </p>
                   )}
-                  <p className="text-xs text-blue-600 dark:text-blue-400 line-clamp-2">
+                  <p className="text-xs text-accent/70 line-clamp-2">
                     {summary}
                   </p>
                 </div>

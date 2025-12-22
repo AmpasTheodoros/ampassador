@@ -49,7 +49,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="text-sm font-medium mb-1">{payload[0].payload.dateLabel}</p>
-          <p className="text-sm text-blue-600 font-semibold">
+          <p className="text-sm text-accent font-semibold">
             Έσοδα: {formatCurrency(payload[0].value)}
           </p>
         </div>
@@ -64,7 +64,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
       return (
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="text-sm font-medium mb-1">{payload[0].payload.dateLabel}</p>
-          <p className="text-sm text-green-600 font-semibold">
+          <p className="text-sm text-primary font-semibold">
             Νέα Leads: {payload[0].value}
           </p>
           {payload[0].payload.conversions > 0 && (
@@ -136,7 +136,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Euro className="h-5 w-5 text-blue-600" />
+              <Euro className="h-5 w-5 text-accent" />
               Έσοδα (EUR)
             </CardTitle>
           </CardHeader>
@@ -144,16 +144,16 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
                   <XAxis
                     dataKey="dateLabel"
-                    stroke="#6b7280"
+                    stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#6b7280"
+                    stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
@@ -163,9 +163,9 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
                   <Line
                     type="monotone"
                     dataKey="revenue"
-                    stroke="#2563eb"
+                    stroke="hsl(var(--accent))"
                     strokeWidth={2}
-                    dot={{ fill: "#2563eb", r: 4 }}
+                    dot={{ fill: "hsl(var(--accent))", r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>
@@ -178,7 +178,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-green-600" />
+              <Users className="h-5 w-5 text-primary" />
               Νέα Leads
             </CardTitle>
           </CardHeader>
@@ -186,16 +186,16 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
                   <XAxis
                     dataKey="dateLabel"
-                    stroke="#6b7280"
+                    stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    stroke="#6b7280"
+                    stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
@@ -203,7 +203,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
                   <Tooltip content={<LeadsTooltip />} />
                   <Bar
                     dataKey="leads"
-                    fill="#10b981"
+                    fill="hsl(var(--primary))"
                     radius={[4, 4, 0, 0]}
                     maxBarSize={60}
                   />

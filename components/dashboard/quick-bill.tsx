@@ -80,7 +80,7 @@ export function QuickBill({ lead, defaultAmount = 150 }: QuickBillProps) {
         variant="outline"
         onClick={handleBill}
         disabled={isLoading}
-        className="text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-950 dark:hover:text-green-400"
+        className="text-accent border-accent hover:bg-accent/10 hover:text-accent"
       >
         {isLoading ? (
           <>

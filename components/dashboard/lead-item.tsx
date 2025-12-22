@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Mail, Phone, X, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { QuickBill } from "./quick-bill";
+import { cn } from "@/lib/utils";
 
 interface LeadItemProps {
   lead: {
@@ -99,16 +100,14 @@ export function LeadItem({ lead }: LeadItemProps) {
       <div className="flex gap-4 items-center flex-1 min-w-0">
         {/* Priority Indicator */}
         <div
-          className={`
-            w-2 h-2 rounded-full flex-shrink-0
-            ${
-              lead.priorityScore && lead.priorityScore > 7
-                ? "bg-red-500"
-                : lead.priorityScore && lead.priorityScore > 5
-                ? "bg-yellow-500"
-                : "bg-green-500"
-            }
-          `}
+          className={cn(
+            "w-2 h-2 rounded-full flex-shrink-0",
+            lead.priorityScore && lead.priorityScore > 7
+              ? "bg-destructive"
+              : lead.priorityScore && lead.priorityScore > 5
+              ? "bg-accent"
+              : "bg-primary"
+          )}
         />
         
         <div className="flex-1 min-w-0">
