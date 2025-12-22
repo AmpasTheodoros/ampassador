@@ -1,11 +1,12 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Send, Loader2, Bot, User } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/lib/i18n";
 
 const translations = {
@@ -42,15 +43,16 @@ export function DocumentChat({
 }: DocumentChatProps) {
   const t = translations[locale];
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [input, setInput] = useState("");
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
       api: "/api/chat",
-      body: {
-        documentId,
-      },
-      initialMessages: [],
-    });
+      body: { documentId },
+    }),
+  });
+
+  const isLoading = status === "streaming";
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -110,7 +112,12 @@ export function DocumentChat({
                     </span>
                   </div>
                   <div className="text-sm whitespace-pre-wrap">
-                    {message.content}
+                    {message.parts.map((part, i) => {
+                      if (part.type === "text") {
+                        return <span key={i}>{part.text}</span>;
+                      }
+                      return null;
+                    })}
                   </div>
                 </div>
 
@@ -148,22 +155,22 @@ export function DocumentChat({
 
         {/* Input Area */}
         <form
-          onSubmit={handleSubmit}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (input.trim() && !isLoading) {
+              sendMessage({ text: input });
+              setInput("");
+            }
+          }}
           className="p-4 border-t bg-background"
         >
           <div className="flex gap-2">
             <Input
               value={input}
-              onChange={handleInputChange}
+              onChange={(e) => setInput(e.target.value)}
               placeholder={t.placeholder}
               disabled={isLoading}
               className="flex-1"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSubmit(e as any);
-                }
-              }}
             />
             <Button type="submit" disabled={isLoading || !input.trim()}>
               {isLoading ? (
@@ -178,4 +185,3 @@ export function DocumentChat({
     </Card>
   );
 }
-

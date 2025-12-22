@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { streamText } from "ai";
+import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { requireOrgId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
@@ -20,7 +20,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const clerkOrgId = await requireOrgId();
-    const { messages, documentId } = await req.json();
+    const { messages, documentId }: { messages: UIMessage[]; documentId: string } = await req.json();
 
     if (!documentId) {
       return NextResponse.json(
@@ -120,12 +120,11 @@ ${docContext}
 6. Αν ρωτάνε για μέρη (ενάγων, εναγόμενος), να τα αναφέρεις με ακρίβεια.
 
 Απάντησε πάντα στα Ελληνικά, εκτός αν ο χρήστης ζητήσει ρητά απάντηση σε άλλη γλώσσα.`,
-      messages: messages || [],
+      messages: await convertToModelMessages(messages || []),
       temperature: 0.3, // Lower temperature for more accurate, consistent responses
-      maxTokens: 2000, // Limit response length
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error("Chat API Error:", error);
 

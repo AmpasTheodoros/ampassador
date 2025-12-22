@@ -96,9 +96,9 @@ export default async function LeadsPage({
                       </span>
                     </div>
                   </div>
-                  {lead.message && (
+                  {lead.description && (
                     <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                      {lead.message}
+                      {lead.description}
                     </p>
                   )}
                 </div>
