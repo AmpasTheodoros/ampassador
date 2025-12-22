@@ -182,6 +182,77 @@
     "alreadySubscribedDescription": "Αυτό το email είναι ήδη στη λίστα ενημερώσεων μας.",
     "errorTitle": "Σφάλμα",
     "errorDescription": "Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε ξανά."
+  },
+  "dashboard": {
+    "greeting": "Καλημέρα, Συνάδελφε",
+    "subtitle": "Αυτή είναι η εικόνα του γραφείου σου σήμερα.",
+    "organizationRequired": "Απαιτείται Οργανισμός",
+    "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στον πίνακα ελέγχου. Παρακαλώ δημιουργήστε έναν νέο οργανισμό ή εγγραφείτε σε έναν υπάρχοντα χρησιμοποιώντας τον διακόπτη οργανισμού στην πλαϊνή γραμμή.",
+    "refreshPage": "Ανανέωση Σελίδας",
+    "newMatter": "Νέα Υπόθεση",
+    "stats": {
+      "newLeads": "Νέα Leads",
+      "newLeadsDescription": "+2 από χθες",
+      "pendingPayments": "Εκκρεμείς Πληρωμές",
+      "pendingPaymentsOverdue": "ληξιπρόθεσμα",
+      "activeMatters": "Ενεργές Υποθέσεις",
+      "activeMattersDescription": "σε προθεσμία",
+      "aiTimeSaved": "Χρόνος AI Εξοικονομημένος",
+      "aiTimeSavedDescription": "Αυτόν το μήνα"
+    },
+    "hotLeads": {
+      "title": "Υψηλής Προτεραιότητας Leads (AI Scored)",
+      "viewAll": "Δείτε όλα",
+      "noLeads": "Δεν υπάρχουν νέα leads αυτή τη στιγμή"
+    },
+    "aiInsights": {
+      "title": "AI Νομικός Βοηθός",
+      "viewAll": "Δείτε όλα",
+      "noInsights": "Δεν υπάρχουν νέα insights αυτή τη στιγμή"
+    },
+    "navigation": {
+      "overview": "Επισκόπηση",
+      "leads": "Leads",
+      "matters": "Υποθέσεις",
+      "documents": "Έγγραφα"
+    },
+    "leads": {
+      "title": "Leads",
+      "subtitle": "Διαχειριστείτε και παρακολουθήστε τα leads σας",
+      "allLeads": "Όλα τα Leads",
+      "noLeads": "Δεν βρέθηκαν leads",
+      "unnamedLead": "Lead χωρίς όνομα",
+      "organizationRequired": "Απαιτείται Οργανισμός",
+      "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στα leads."
+    },
+    "matters": {
+      "title": "Υποθέσεις",
+      "subtitle": "Διαχειριστείτε τις νομικές υποθέσεις και υποθέσεις σας",
+      "allMatters": "Όλες οι Υποθέσεις",
+      "noMatters": "Δεν βρέθηκαν υποθέσεις",
+      "untitledMatter": "Άτιτλη Υπόθεση",
+      "newMatter": "Νέα Υπόθεση",
+      "createFirstMatter": "Δημιουργήστε την Πρώτη σας Υπόθεση",
+      "organizationRequired": "Απαιτείται Οργανισμός",
+      "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στις υποθέσεις."
+    }
+  },
+  "intake": {
+    "title": "Επικοινωνία με το Νομικό Γραφείο",
+    "subtitle": "Συμπληρώστε την παρακάτω φόρμα και θα επικοινωνήσουμε μαζί σας το συντομότερο δυνατό",
+    "name": "Ονοματεπώνυμο",
+    "email": "Διεύθυνση Email",
+    "phone": "Αριθμός Τηλεφώνου (Προαιρετικό)",
+    "description": "Περιγράψτε την υπόθεσή σας με λίγα λόγια...",
+    "submit": "Αποστολή Αιτήματος",
+    "submitting": "Αποστολή...",
+    "successTitle": "Ευχαριστούμε!",
+    "successMessage": "Το αίτημά σας έχει ληφθεί. Το νομικό γραφείο θα επικοινωνήσει μαζί σας σύντομα.",
+    "errorTitle": "Σφάλμα",
+    "errorMessage": "Κάτι πήγε στραβά. Παρακαλώ δοκιμάστε ξανά.",
+    "required": "Αυτό το πεδίο είναι υποχρεωτικό",
+    "invalidEmail": "Παρακαλώ εισάγετε μια έγκυρη διεύθυνση email",
+    "descriptionMin": "Παρακαλώ δώστε τουλάχιστον 10 χαρακτήρες"
   }
 }
 

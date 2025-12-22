@@ -54,3 +54,199 @@ model NewsletterSignup {
   @@index([createdAt])
 }
 
+// ============================================
+// 360 Dashboard Models (Clerk Organizations)
+// ============================================
+
+model Firm {
+  id                     String   @id @default(cuid())
+  clerkOrgId             String   @unique // Clerk Organization ID - primary identifier
+  name                   String
+  stripeConnectAccountId String?  @unique // Stripe Connect Account ID για να δέχεται πληρωμές από πελάτες
+  stripeConnectOnboardingCompleted Boolean @default(false) // Track onboarding status
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  users       User[]
+  leads       Lead[]
+  matters     Matter[]
+  invoices    Invoice[]
+  documents   Document[]
+  deadlines   Deadline[]
+
+  @@index([clerkOrgId])
+  @@index([name])
+  @@index([stripeConnectAccountId])
+}
+
+model User {
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique // Clerk User ID
+  clerkOrgId  String   // Clerk Organization ID (syncs with Clerk)
+  firm        Firm?    @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  email       String   @unique
+  name        String?
+  role        UserRole @default(ATTORNEY)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([clerkOrgId])
+  @@index([clerkUserId])
+  @@index([email])
+}
+
+model Lead {
+  id                String     @id @default(cuid())
+  clerkOrgId        String     // Clerk Organization ID
+  firm              Firm       @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  name              String
+  email             String
+  phone             String?
+  description       String     // Το κείμενο του προβλήματος του πελάτη
+  status            LeadStatus @default(NEW) // NEW, CONTACTED, CONVERTED, LOST
+  source            String?    // π.χ. "Facebook Ads", "Organic", "Website Form"
+  value             Float?     // Εκτιμώμενη αξία υπόθεσης
+  priorityScore     Int?       // AI Generated: 1-10 (1=low priority, 10=urgent/high value)
+  aiSummary         String?    // Σύντομη σύνοψη από το LLM (10-20 λέξεις)
+  notes             String?    // Manual notes από τον δικηγόρο
+  convertedToMatterId String?
+  convertedToMatter Matter?    @relation(fields: [convertedToMatterId], references: [id], onDelete: SetNull)
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([clerkOrgId])
+  @@index([status])
+  @@index([email])
+  @@index([createdAt])
+  @@index([convertedToMatterId])
+  @@index([priorityScore])
+}
+
+model Matter {
+  id          String       @id @default(cuid())
+  clerkOrgId  String       // Clerk Organization ID
+  firm        Firm         @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  title       String
+  description String?
+  status      MatterStatus @default(ACTIVE)
+  billingType String       // "Fixed", "Hourly"
+  deadline    DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  invoices    Invoice[]
+  convertedLeads Lead[]    // Leads that were converted to this Matter
+  documents   Document[]   // Documents associated with this Matter
+  deadlines   Deadline[]   // Deadlines extracted from documents in this Matter
+
+  @@index([clerkOrgId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  clerkOrgId  String        // Clerk Organization ID
+  firm        Firm          @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  matterId    String?
+  matter      Matter?       @relation(fields: [matterId], references: [id], onDelete: SetNull)
+  leadId      String?       // Lead ID (για quick billing από leads)
+  amount      Float
+  status      InvoiceStatus @default(UNPAID)
+  dueDate     DateTime?
+  paidAt      DateTime?
+  description String?
+  customerEmail String?     // Email του πελάτη που πληρώνει (required για checkout invoices)
+  stripeSessionId String?   @unique // Stripe Checkout Session ID
+  stripePaymentIntentId String? // Stripe Payment Intent ID (για Stripe Connect)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([clerkOrgId])
+  @@index([matterId])
+  @@index([leadId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([stripeSessionId])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  LOST
+}
+
+enum MatterStatus {
+  ACTIVE
+  CLOSED
+  ON_HOLD
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum UserRole {
+  ATTORNEY
+  PARALEGAL
+  ADMIN
+}
+
+// ============================================
+// Document Parsing Models (AI-Powered)
+// ============================================
+
+model Document {
+  id          String   @id @default(cuid())
+  clerkOrgId  String
+  firm        Firm     @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  matterId    String?
+  matter      Matter?  @relation(fields: [matterId], references: [id], onDelete: SetNull)
+  fileName    String
+  fileUrl     String   // URL από Uploadthing, S3, ή άλλο storage
+  fileSize    Int?     // File size in bytes
+  fileType    String?  // MIME type (e.g., "application/pdf")
+  aiAnalysis  Json?    // JSON: { summary, deadlines, parties, urgency, ... }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  deadlines   Deadline[] // Deadlines extracted from this document
+
+  @@index([clerkOrgId])
+  @@index([matterId])
+  @@index([createdAt])
+}
+
+model Deadline {
+  id          String   @id @default(cuid())
+  clerkOrgId  String
+  firm        Firm     @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  matterId    String?
+  matter      Matter?  @relation(fields: [matterId], references: [id], onDelete: SetNull)
+  documentId  String?
+  document    Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  title       String   // Περιγραφή της προθεσμίας (π.χ. "Ανακοπή δίκης")
+  dueDate     DateTime // Η ημερομηνία προθεσμίας
+  description String?  // Επιπλέον σημειώσεις
+  status      DeadlineStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([clerkOrgId])
+  @@index([matterId])
+  @@index([documentId])
+  @@index([dueDate])
+  @@index([status])
+}
+
+enum DeadlineStatus {
+  PENDING
+  COMPLETED
+  OVERDUE
+  CANCELLED
+}

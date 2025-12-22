@@ -181,6 +181,77 @@
     "alreadySubscribedDescription": "This email is already on our newsletter list.",
     "errorTitle": "Error",
     "errorDescription": "Something went wrong. Please try again."
+  },
+  "dashboard": {
+    "greeting": "Good Morning, Colleague",
+    "subtitle": "This is your office overview today.",
+    "organizationRequired": "Organization Required",
+    "organizationRequiredDescription": "You need to be part of an organization to access the dashboard. Please create a new organization or join an existing one using the organization switcher in the sidebar.",
+    "refreshPage": "Refresh Page",
+    "newMatter": "New Matter",
+    "stats": {
+      "newLeads": "New Leads",
+      "newLeadsDescription": "+2 from yesterday",
+      "pendingPayments": "Pending Payments",
+      "pendingPaymentsOverdue": "overdue",
+      "activeMatters": "Active Matters",
+      "activeMattersDescription": "on deadline",
+      "aiTimeSaved": "AI Time Saved",
+      "aiTimeSavedDescription": "This month"
+    },
+    "hotLeads": {
+      "title": "High Priority Leads (AI Scored)",
+      "viewAll": "View All",
+      "noLeads": "There are no new leads at this time"
+    },
+    "aiInsights": {
+      "title": "AI Legal Assistant",
+      "viewAll": "See All",
+      "noInsights": "There are no new insights at this time"
+    },
+    "navigation": {
+      "overview": "Overview",
+      "leads": "Leads",
+      "matters": "Matters",
+      "documents": "Documents"
+    },
+    "leads": {
+      "title": "Leads",
+      "subtitle": "Manage and track your leads",
+      "allLeads": "All Leads",
+      "noLeads": "No leads found",
+      "unnamedLead": "Unnamed Lead",
+      "organizationRequired": "Organization Required",
+      "organizationRequiredDescription": "You need to be part of an organization to access leads."
+    },
+    "matters": {
+      "title": "Matters",
+      "subtitle": "Manage your legal matters and cases",
+      "allMatters": "All Matters",
+      "noMatters": "No matters found",
+      "untitledMatter": "Untitled Matter",
+      "newMatter": "New Matter",
+      "createFirstMatter": "Create Your First Matter",
+      "organizationRequired": "Organization Required",
+      "organizationRequiredDescription": "You need to be part of an organization to access matters."
+    }
+  },
+  "intake": {
+    "title": "Contact the Law Firm",
+    "subtitle": "Fill out the form below and we'll get back to you as soon as possible",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number (Optional)",
+    "description": "Describe your legal issue in a few words...",
+    "submit": "Submit Request",
+    "submitting": "Submitting...",
+    "successTitle": "Thank You!",
+    "successMessage": "Your request has been received. The law firm will contact you soon.",
+    "errorTitle": "Error",
+    "errorMessage": "Something went wrong. Please try again.",
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "descriptionMin": "Please provide at least 10 characters"
   }
 }
 
