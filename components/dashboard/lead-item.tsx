@@ -6,6 +6,8 @@ import { Clock, Mail, Phone, X, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { QuickBill } from "./quick-bill";
 import { cn } from "@/lib/utils";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
 interface LeadItemProps {
   lead: {
@@ -19,6 +21,7 @@ interface LeadItemProps {
     source: string | null;
     createdAt: Date;
   };
+  locale: Locale;
 }
 
 // Helper function to get badge variant based on priority score
@@ -31,17 +34,25 @@ function getPriorityVariant(score: number | null) {
 }
 
 // Helper function to format time ago
-function getTimeAgo(date: Date) {
+function getTimeAgo(date: Date, t: (key: string) => string) {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return "Τώρα";
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}λ πριν`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}ω πριν`;
-  return `${Math.floor(diffInSeconds / 86400)}μ πριν`;
+  if (diffInSeconds < 60) return t("dashboard.leads.timeAgo.now");
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return t("dashboard.leads.timeAgo.minutesAgo").replace("{minutes}", minutes.toString());
+  }
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return t("dashboard.leads.timeAgo.hoursAgo").replace("{hours}", hours.toString());
+  }
+  const days = Math.floor(diffInSeconds / 86400);
+  return t("dashboard.leads.timeAgo.daysAgo").replace("{days}", days.toString());
 }
 
-export function LeadItem({ lead }: LeadItemProps) {
+export function LeadItem({ lead, locale }: LeadItemProps) {
+  const t = getTranslations(locale);
   const [isIgnoring, setIsIgnoring] = useState(false);
   const [isConverting, setIsConverting] = useState(false);
 
@@ -88,7 +99,7 @@ export function LeadItem({ lead }: LeadItemProps) {
       // Show user-friendly error message
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Αποτυχία μετατροπής του lead σε υπόθεση. Παρακαλώ δοκιμάστε ξανά.";
+        : t("dashboard.leads.convertError");
       alert(errorMessage);
     } finally {
       setIsConverting(false);
@@ -144,7 +155,7 @@ export function LeadItem({ lead }: LeadItemProps) {
             )}
             <div className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              <span>{getTimeAgo(lead.createdAt)}</span>
+              <span>{getTimeAgo(lead.createdAt, t)}</span>
             </div>
             {lead.source && (
               <Badge variant="outline" className="text-xs">
@@ -165,6 +176,7 @@ export function LeadItem({ lead }: LeadItemProps) {
             aiSummary: lead.aiSummary,
             description: lead.description,
           }}
+          locale={locale}
         />
         <Button
           size="sm"
@@ -173,7 +185,7 @@ export function LeadItem({ lead }: LeadItemProps) {
           disabled={isIgnoring || isConverting}
         >
           <X className="h-4 w-4 mr-1" />
-          Παράβλεψη
+          {t("dashboard.leads.actions.skip")}
         </Button>
         <Button
           size="sm"
@@ -181,7 +193,7 @@ export function LeadItem({ lead }: LeadItemProps) {
           disabled={isIgnoring || isConverting}
         >
           <CheckCircle2 className="h-4 w-4 mr-1" />
-          Μετατροπή σε Υπόθεση
+          {t("dashboard.leads.actions.convertToMatter")}
         </Button>
       </div>
     </div>

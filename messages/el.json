@@ -235,6 +235,51 @@
       "createFirstMatter": "Δημιουργήστε την Πρώτη σας Υπόθεση",
       "organizationRequired": "Απαιτείται Οργανισμός",
       "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στις υποθέσεις."
+    },
+    "analytics": {
+      "totalRevenue": "Συνολικά Έσοδα",
+      "lastDays": "Τελευταίες {days} ημέρες",
+      "newLeads": "Νέα Leads",
+      "conversions": "μετατροπές",
+      "averagePerDay": "Μέσος Όρος/Ημέρα",
+      "leadsPerDay": "leads/ημέρα",
+      "revenue": "Έσοδα",
+      "revenueEUR": "Έσοδα (EUR)",
+      "revenueLabel": "Έσοδα",
+      "newLeadsLabel": "Νέα Leads",
+      "conversionsLabel": "Μετατροπές"
+    },
+    "leads": {
+      "timeAgo": {
+        "now": "Τώρα",
+        "minutesAgo": "{minutes}λ πριν",
+        "hoursAgo": "{hours}ω πριν",
+        "daysAgo": "{days}μ πριν"
+      },
+      "actions": {
+        "skip": "Παράβλεψη",
+        "convertToMatter": "Μετατροπή σε Υπόθεση",
+        "quickBill": "Άμεση Πληρωμή",
+        "quickBillButton": "Άμεση Πληρωμή ({amount}€)",
+        "creating": "Δημιουργία...",
+        "advancePaymentForCase": "Προκαταβολή για υπόθεση: {summary}",
+        "advancePaymentFor": "Προκαταβολή για υπόθεση: {name}",
+        "checkoutSessionFailed": "Αποτυχία δημιουργίας checkout session",
+        "checkoutUrlNotReturned": "Δεν επιστράφηκε checkout URL",
+        "checkoutSessionError": "Αποτυχία δημιουργίας checkout session. Παρακαλώ δοκιμάστε ξανά."
+      },
+      "convertError": "Αποτυχία μετατροπής του lead σε υπόθεση. Παρακαλώ δοκιμάστε ξανά."
+    },
+    "aiInsights": {
+      "title": "AI Νομικός Βοηθός",
+      "newDocuments": "Νέα Έγγραφα",
+      "urgentDeadline": "Προσοχή: Προθεσμία σε {hours}h",
+      "deadlineIn": "Προθεσμία {time}",
+      "notLinkedToMatter": "Δεν συνδέεται με υπόθεση",
+      "newDocumentAnalyzed": "Νέο Έγγραφο Αναλύθηκε",
+      "matter": "Υπόθεση",
+      "noInsights": "Δεν υπάρχουν νέα insights αυτή τη στιγμή",
+      "documentAnalyzedSuccessfully": "Έγγραφο αναλύθηκε επιτυχώς"
     }
   },
   "intake": {

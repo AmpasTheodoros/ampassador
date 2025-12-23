@@ -5,8 +5,11 @@ import { requireOrgId } from "@/lib/auth";
 import { AlertTriangle, FileText, Clock, Sparkles } from "lucide-react";
 import { Prisma } from "@prisma/client";
 import { cn } from "@/lib/utils";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
+
 // Helper function to format time until deadline
-function formatTimeUntil(date: Date): string {
+function formatTimeUntil(date: Date, t: (key: string) => string, locale: Locale): string {
   const now = new Date();
   const diffInMs = date.getTime() - now.getTime();
   const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
@@ -14,13 +17,17 @@ function formatTimeUntil(date: Date): string {
 
   if (diffInHours < 1) {
     const minutes = Math.floor(diffInMs / (1000 * 60));
-    return `σε ${minutes} λεπτά`;
+    const timeStr = locale === "el" ? `${minutes} λεπτά` : `${minutes} minutes`;
+    return t("dashboard.aiInsights.deadlineIn").replace("{time}", timeStr);
   } else if (diffInHours < 24) {
-    return `σε ${diffInHours} ώρες`;
+    const timeStr = locale === "el" ? `σε ${diffInHours} ώρες` : `in ${diffInHours} hours`;
+    return t("dashboard.aiInsights.deadlineIn").replace("{time}", timeStr);
   } else if (diffInDays === 1) {
-    return "αύριο";
+    const timeStr = locale === "el" ? "αύριο" : "tomorrow";
+    return t("dashboard.aiInsights.deadlineIn").replace("{time}", timeStr);
   } else {
-    return `σε ${diffInDays} ημέρες`;
+    const timeStr = locale === "el" ? `σε ${diffInDays} ημέρες` : `in ${diffInDays} days`;
+    return t("dashboard.aiInsights.deadlineIn").replace("{time}", timeStr);
   }
 }
 
@@ -32,8 +39,9 @@ function formatTimeUntil(date: Date): string {
  * - Recent document analyses
  * - AI-generated recommendations
  */
-export async function AIInsights() {
+export async function AIInsights({ locale }: { locale: Locale }) {
   const clerkOrgId = await requireOrgId();
+  const t = getTranslations(locale);
 
   // Fetch upcoming deadlines (next 7 days, not completed)
   const upcomingDeadlines = await prisma.deadline.findMany({
@@ -96,7 +104,7 @@ export async function AIInsights() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="h-5 w-5" />
-          AI Legal Assistant
+          {t("dashboard.aiInsights.title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -133,8 +141,8 @@ export async function AIInsights() {
                           )}
                         >
                           {isUrgent
-                            ? `Προσοχή: Προθεσμία σε ${Math.round(hoursUntilDeadline)}h`
-                            : `Προθεσμία ${formatTimeUntil(deadline.dueDate)}`}
+                            ? t("dashboard.aiInsights.urgentDeadline").replace("{hours}", Math.round(hoursUntilDeadline).toString())
+                            : formatTimeUntil(deadline.dueDate, t, locale)}
                         </p>
                       </div>
                       <p
@@ -145,7 +153,7 @@ export async function AIInsights() {
                             : "text-accent/80"
                         )}
                       >
-                        {deadline.matter?.title || "Δεν συνδέεται με υπόθεση"}
+                        {deadline.matter?.title || t("dashboard.aiInsights.notLinkedToMatter")}
                       </p>
                       <p
                         className={cn(
@@ -169,12 +177,12 @@ export async function AIInsights() {
         {recentDocuments.length > 0 && (
           <div className="space-y-2 pt-4 border-t">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Νέα Έγγραφα
+              {t("dashboard.aiInsights.newDocuments")}
             </p>
             {recentDocuments.map((doc: typeof recentDocuments[0]) => {
               const analysis = doc.aiAnalysis as any;
               const summary =
-                analysis?.summary || "Έγγραφο αναλύθηκε επιτυχώς";
+                analysis?.summary || t("dashboard.aiInsights.documentAnalyzedSuccessfully");
 
               return (
                 <div
@@ -184,7 +192,7 @@ export async function AIInsights() {
                   <div className="flex items-start gap-2 mb-1">
                     <FileText className="h-4 w-4 text-accent mt-0.5" />
                     <p className="text-sm font-medium text-accent">
-                      Νέο Έγγραφο Αναλύθηκε
+                      {t("dashboard.aiInsights.newDocumentAnalyzed")}
                     </p>
                   </div>
                   <p className="text-xs text-accent/80 mb-1">
@@ -192,7 +200,7 @@ export async function AIInsights() {
                   </p>
                   {doc.matter && (
                     <p className="text-xs text-accent/70 mb-1">
-                      Υπόθεση: {doc.matter.title}
+                      {t("dashboard.aiInsights.matter")}: {doc.matter.title}
                     </p>
                   )}
                   <p className="text-xs text-accent/70 line-clamp-2">
@@ -209,7 +217,7 @@ export async function AIInsights() {
           <div className="text-center py-8">
             <Clock className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">
-              Δεν υπάρχουν νέα insights αυτή τη στιγμή
+              {t("dashboard.aiInsights.noInsights")}
             </p>
           </div>
         )}

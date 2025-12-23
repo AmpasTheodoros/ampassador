@@ -234,6 +234,51 @@
       "createFirstMatter": "Create Your First Matter",
       "organizationRequired": "Organization Required",
       "organizationRequiredDescription": "You need to be part of an organization to access matters."
+    },
+    "analytics": {
+      "totalRevenue": "Total Revenue",
+      "lastDays": "Last {days} days",
+      "newLeads": "New Leads",
+      "conversions": "conversions",
+      "averagePerDay": "Average/Day",
+      "leadsPerDay": "leads/day",
+      "revenue": "Revenue",
+      "revenueEUR": "Revenue (EUR)",
+      "revenueLabel": "Revenue",
+      "newLeadsLabel": "New Leads",
+      "conversionsLabel": "Conversions"
+    },
+    "leads": {
+      "timeAgo": {
+        "now": "Now",
+        "minutesAgo": "{minutes}m ago",
+        "hoursAgo": "{hours}h ago",
+        "daysAgo": "{days}d ago"
+      },
+      "actions": {
+        "skip": "Skip",
+        "convertToMatter": "Convert to Matter",
+        "quickBill": "Quick Bill",
+        "quickBillButton": "Quick Payment ({amount}€)",
+        "creating": "Creating...",
+        "advancePaymentForCase": "Advance payment for case: {summary}",
+        "advancePaymentFor": "Advance payment for case: {name}",
+        "checkoutSessionFailed": "Failed to create checkout session",
+        "checkoutUrlNotReturned": "Checkout URL was not returned",
+        "checkoutSessionError": "Failed to create checkout session. Please try again."
+      },
+      "convertError": "Failed to convert lead to matter. Please try again."
+    },
+    "aiInsights": {
+      "title": "AI Legal Assistant",
+      "newDocuments": "New Documents",
+      "urgentDeadline": "Urgent: Deadline in {hours}h",
+      "deadlineIn": "Deadline {time}",
+      "notLinkedToMatter": "Not linked to a matter",
+      "newDocumentAnalyzed": "New Document Analyzed",
+      "matter": "Matter",
+      "noInsights": "No new insights at this time",
+      "documentAnalyzedSuccessfully": "Document analyzed successfully"
     }
   },
   "intake": {

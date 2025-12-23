@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Euro, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
 interface QuickBillProps {
   lead: {
@@ -13,6 +15,7 @@ interface QuickBillProps {
     description: string | null;
   };
   defaultAmount?: number;
+  locale: Locale;
 }
 
 /**
@@ -21,7 +24,8 @@ interface QuickBillProps {
  * Creates a quick payment link for a lead.
  * Opens Stripe Checkout in a new window.
  */
-export function QuickBill({ lead, defaultAmount = 150 }: QuickBillProps) {
+export function QuickBill({ lead, defaultAmount = 150, locale }: QuickBillProps) {
+  const t = getTranslations(locale);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,8 +35,8 @@ export function QuickBill({ lead, defaultAmount = 150 }: QuickBillProps) {
 
     try {
       const description = lead.aiSummary 
-        ? `Προκαταβολή για υπόθεση: ${lead.aiSummary}`
-        : `Προκαταβολή για υπόθεση: ${lead.name}`;
+        ? t("dashboard.leads.actions.advancePaymentForCase").replace("{summary}", lead.aiSummary)
+        : t("dashboard.leads.actions.advancePaymentFor").replace("{name}", lead.name);
 
       const response = await fetch("/api/stripe/create-checkout", {
         method: "POST",
@@ -50,20 +54,20 @@ export function QuickBill({ lead, defaultAmount = 150 }: QuickBillProps) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || "Αποτυχία δημιουργίας checkout session");
+        throw new Error(data.error || data.message || t("dashboard.leads.actions.checkoutSessionFailed"));
       }
 
       // Open checkout URL in new window
       if (data.url) {
         window.open(data.url, "_blank", "noopener,noreferrer");
       } else {
-        throw new Error("Δεν επιστράφηκε checkout URL");
+        throw new Error(t("dashboard.leads.actions.checkoutUrlNotReturned"));
       }
     } catch (error) {
       console.error("QuickBill Error:", error);
       const errorMessage = error instanceof Error 
         ? error.message 
-        : "Αποτυχία δημιουργίας checkout session. Παρακαλώ δοκιμάστε ξανά.";
+        : t("dashboard.leads.actions.checkoutSessionError");
       setError(errorMessage);
       
       // Show error to user (you can replace with toast notification)
@@ -85,12 +89,12 @@ export function QuickBill({ lead, defaultAmount = 150 }: QuickBillProps) {
         {isLoading ? (
           <>
             <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-            Δημιουργία...
+            {t("dashboard.leads.actions.creating")}
           </>
         ) : (
           <>
             <Euro className="h-4 w-4 mr-1" />
-            Άμεση Πληρωμή ({defaultAmount}€)
+            {t("dashboard.leads.actions.quickBillButton").replace("{amount}", defaultAmount.toString())}
           </>
         )}
       </Button>

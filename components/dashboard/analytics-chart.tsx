@@ -14,6 +14,8 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Users, Euro } from "lucide-react";
+import { getTranslations } from "@/lib/translations";
+import type { Locale } from "@/lib/i18n";
 
 interface AnalyticsData {
   date: string;
@@ -25,6 +27,7 @@ interface AnalyticsData {
 
 interface AnalyticsChartProps {
   data: AnalyticsData[];
+  locale: Locale;
 }
 
 /**
@@ -32,10 +35,13 @@ interface AnalyticsChartProps {
  * 
  * Displays revenue and leads trends using Recharts
  */
-export function AnalyticsChart({ data }: AnalyticsChartProps) {
+export function AnalyticsChart({ data, locale }: AnalyticsChartProps) {
+  const t = getTranslations(locale);
+  
   // Format currency for tooltip
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("el-GR", {
+    const localeCode = locale === "el" ? "el-GR" : "en-GB";
+    return new Intl.NumberFormat(localeCode, {
       style: "currency",
       currency: "EUR",
       minimumFractionDigits: 0,
@@ -50,7 +56,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="text-sm font-medium mb-1">{payload[0].payload.dateLabel}</p>
           <p className="text-sm text-accent font-semibold">
-            Έσοδα: {formatCurrency(payload[0].value)}
+            {t("dashboard.analytics.revenueLabel")}: {formatCurrency(payload[0].value)}
           </p>
         </div>
       );
@@ -65,11 +71,11 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
         <div className="bg-background border border-border rounded-lg shadow-lg p-3">
           <p className="text-sm font-medium mb-1">{payload[0].payload.dateLabel}</p>
           <p className="text-sm text-primary font-semibold">
-            Νέα Leads: {payload[0].value}
+            {t("dashboard.analytics.newLeadsLabel")}: {payload[0].value}
           </p>
           {payload[0].payload.conversions > 0 && (
             <p className="text-xs text-muted-foreground mt-1">
-              Μετατροπές: {payload[0].payload.conversions}
+              {t("dashboard.analytics.conversionsLabel")}: {payload[0].payload.conversions}
             </p>
           )}
         </div>
@@ -90,33 +96,33 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Συνολικά Έσοδα</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.analytics.totalRevenue")}</CardTitle>
             <Euro className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totalRevenue)}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Τελευταίες {data.length} ημέρες
+              {t("dashboard.analytics.lastDays").replace("{days}", data.length.toString())}
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Νέα Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.analytics.newLeads")}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalLeads}</div>
             <p className="text-xs text-muted-foreground mt-1">
-              {totalConversions} μετατροπές ({conversionRate.toFixed(1)}%)
+              {totalConversions} {t("dashboard.analytics.conversions")} ({conversionRate.toFixed(1)}%)
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Μέσος Όρος/Ημέρα</CardTitle>
+            <CardTitle className="text-sm font-medium">{t("dashboard.analytics.averagePerDay")}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -124,7 +130,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
               {formatCurrency(totalRevenue / Math.max(data.length, 1))}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {(totalLeads / Math.max(data.length, 1)).toFixed(1)} leads/ημέρα
+              {(totalLeads / Math.max(data.length, 1)).toFixed(1)} {t("dashboard.analytics.leadsPerDay")}
             </p>
           </CardContent>
         </Card>
@@ -137,7 +143,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Euro className="h-5 w-5 text-accent" />
-              Έσοδα (EUR)
+              {t("dashboard.analytics.revenueEUR")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -179,7 +185,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              Νέα Leads
+              {t("dashboard.analytics.newLeadsLabel")}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -174,7 +174,7 @@ export default async function DashboardPage({
       </div>
 
       {/* Analytics Charts */}
-      <AnalyticsChart data={analyticsData} />
+      <AnalyticsChart data={analyticsData} locale={locale as Locale} />
 
       {/* Bento Grid: Main Content + Sidebar */}
       <div className="grid gap-4 md:grid-cols-7">
@@ -194,13 +194,13 @@ export default async function DashboardPage({
             </div>
           </CardHeader>
           <CardContent>
-            <HotLeadsList />
+            <HotLeadsList locale={locale as Locale} />
           </CardContent>
         </Card>
 
         {/* Sidebar Feed: AI Insights - 3 columns */}
         <div className="col-span-3 space-y-4">
-          <AIInsights />
+          <AIInsights locale={locale as Locale} />
         </div>
       </div>
     </div>
