@@ -1,7 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { prisma } from "@/lib/prisma";
-import { requireOrgId } from "@/lib/auth";
 import { AlertTriangle, FileText, Clock, Sparkles } from "lucide-react";
 import { Prisma } from "@prisma/client";
 import { cn } from "@/lib/utils";
@@ -31,6 +29,28 @@ function formatTimeUntil(date: Date, t: (key: string) => string, locale: Locale)
   }
 }
 
+type Deadline = Prisma.DeadlineGetPayload<{
+  include: {
+    matter: {
+      select: {
+        id: true;
+        title: true;
+      };
+    };
+  };
+}>;
+
+type Document = Prisma.DocumentGetPayload<{
+  include: {
+    matter: {
+      select: {
+        id: true;
+        title: true;
+      };
+    };
+  };
+}>;
+
 /**
  * AI Insights Component
  * 
@@ -38,62 +58,25 @@ function formatTimeUntil(date: Date, t: (key: string) => string, locale: Locale)
  * - Upcoming deadlines (urgent, within 48h)
  * - Recent document analyses
  * - AI-generated recommendations
+ * 
+ * @param locale - The locale for translations
+ * @param deadlines - Pre-fetched deadlines data (optional, for optimization)
+ * @param documents - Pre-fetched documents data (optional, for optimization)
  */
-export async function AIInsights({ locale }: { locale: Locale }) {
-  const clerkOrgId = await requireOrgId();
+export function AIInsights({ 
+  locale, 
+  deadlines = [],
+  documents = []
+}: { 
+  locale: Locale;
+  deadlines?: Deadline[];
+  documents?: Document[];
+}) {
   const t = getTranslations(locale);
-
-  // Fetch upcoming deadlines (next 7 days, not completed)
-  const upcomingDeadlines = await prisma.deadline.findMany({
-    where: {
-      clerkOrgId,
-      status: {
-        notIn: ["COMPLETED", "CANCELLED"],
-      },
-      dueDate: {
-        gte: new Date(),
-        lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next 7 days
-      },
-    },
-    orderBy: {
-      dueDate: "asc",
-    },
-    take: 5,
-    include: {
-      matter: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-    },
-  });
-
-  // Fetch recently analyzed documents (last 5)
-  const recentDocuments = await prisma.document.findMany({
-    where: {
-      clerkOrgId,
-      aiAnalysis: {
-        not: Prisma.JsonNull,
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    take: 3,
-    include: {
-      matter: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-    },
-  });
 
   // Calculate urgent deadlines (within 48 hours)
   const now = new Date();
-  const urgentDeadlines = upcomingDeadlines.filter((deadline: typeof upcomingDeadlines[0]) => {
+  const urgentDeadlines = deadlines.filter((deadline) => {
     const hoursUntilDeadline =
       (deadline.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
     return hoursUntilDeadline <= 48;
@@ -111,7 +94,7 @@ export async function AIInsights({ locale }: { locale: Locale }) {
         {/* Urgent Deadlines */}
         {urgentDeadlines.length > 0 && (
           <div className="space-y-2">
-            {urgentDeadlines.map((deadline: typeof urgentDeadlines[0]) => {
+            {urgentDeadlines.map((deadline) => {
               const hoursUntilDeadline =
                 (deadline.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
               const isUrgent = hoursUntilDeadline <= 48;
@@ -174,12 +157,12 @@ export async function AIInsights({ locale }: { locale: Locale }) {
         )}
 
         {/* Recent Document Analyses */}
-        {recentDocuments.length > 0 && (
+        {documents.length > 0 && (
           <div className="space-y-2 pt-4 border-t">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               {t("dashboard.aiInsights.newDocuments")}
             </p>
-            {recentDocuments.map((doc: typeof recentDocuments[0]) => {
+            {documents.map((doc) => {
               const analysis = doc.aiAnalysis as any;
               const summary =
                 analysis?.summary || t("dashboard.aiInsights.documentAnalyzedSuccessfully");
@@ -213,7 +196,7 @@ export async function AIInsights({ locale }: { locale: Locale }) {
         )}
 
         {/* Empty State */}
-        {urgentDeadlines.length === 0 && recentDocuments.length === 0 && (
+        {urgentDeadlines.length === 0 && documents.length === 0 && (
           <div className="text-center py-8">
             <Clock className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
             <p className="text-sm text-muted-foreground">

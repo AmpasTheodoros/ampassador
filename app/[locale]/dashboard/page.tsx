@@ -7,6 +7,7 @@ import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
 import { getOrgId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getDashboardAnalytics } from "@/lib/get-analytics";
+import { Prisma } from "@prisma/client";
 import { 
   TrendingUp, 
   Plus,
@@ -56,13 +57,16 @@ export default async function DashboardPage({
     );
   }
 
-  // Fetch dashboard stats in parallel
+  // Fetch all dashboard data in parallel to minimize database round trips
   const [
     newLeadsCount,
     unpaidInvoicesData,
     activeMattersCount,
     overdueInvoicesData,
     analyticsData,
+    hotLeads,
+    upcomingDeadlines,
+    recentDocuments,
   ] = await Promise.all([
     // New leads count
     prisma.lead.count({
@@ -99,6 +103,75 @@ export default async function DashboardPage({
     }),
     // Analytics data (last 7 days)
     getDashboardAnalytics(clerkOrgId, 7),
+    // Hot leads (top 5 by priority) - fetch here to avoid child component query
+    prisma.lead.findMany({
+      where: {
+        clerkOrgId,
+        status: "NEW",
+      },
+      orderBy: [
+        { priorityScore: "desc" },
+        { createdAt: "desc" },
+      ],
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        description: true,
+        priorityScore: true,
+        aiSummary: true,
+        source: true,
+        createdAt: true,
+      },
+    }),
+    // Upcoming deadlines (next 7 days) - fetch here to avoid child component query
+    prisma.deadline.findMany({
+      where: {
+        clerkOrgId,
+        status: {
+          notIn: ["COMPLETED", "CANCELLED"],
+        },
+        dueDate: {
+          gte: new Date(),
+          lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        },
+      },
+      orderBy: {
+        dueDate: "asc",
+      },
+      take: 5,
+      include: {
+        matter: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    }),
+    // Recent documents with AI analysis - fetch here to avoid child component query
+    prisma.document.findMany({
+      where: {
+        clerkOrgId,
+        aiAnalysis: {
+          not: Prisma.JsonNull,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 3,
+      include: {
+        matter: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+    }),
   ]);
 
   // Calculate AI time saved (placeholder - can be calculated from actual usage)
@@ -194,13 +267,17 @@ export default async function DashboardPage({
             </div>
           </CardHeader>
           <CardContent>
-            <HotLeadsList locale={locale as Locale} />
+            <HotLeadsList locale={locale as Locale} leads={hotLeads} />
           </CardContent>
         </Card>
 
         {/* Sidebar Feed: AI Insights - 3 columns */}
         <div className="lg:col-span-3 space-y-4">
-          <AIInsights locale={locale as Locale} />
+          <AIInsights 
+            locale={locale as Locale} 
+            deadlines={upcomingDeadlines}
+            documents={recentDocuments}
+          />
         </div>
       </div>
     </div>
