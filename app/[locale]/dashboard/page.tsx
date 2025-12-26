@@ -120,18 +120,18 @@ export default async function DashboardPage({
   };
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-6 lg:space-y-8 p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
             {t("dashboard.greeting")}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {t("dashboard.subtitle")}
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href={`/${locale}/dashboard/matters/new`}>
             <Plus className="h-4 w-4 mr-2" />
             {t("dashboard.newMatter")}
@@ -177,16 +177,16 @@ export default async function DashboardPage({
       <AnalyticsChart data={analyticsData} locale={locale as Locale} />
 
       {/* Bento Grid: Main Content + Sidebar */}
-      <div className="grid gap-4 md:grid-cols-7">
+      <div className="grid gap-4 lg:grid-cols-7">
         {/* Main Feed: Hot Leads (AI Powered) - 4 columns */}
-        <Card className="col-span-4">
+        <Card className="lg:col-span-4">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t("dashboard.hotLeads.title")}
               </CardTitle>
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="w-full sm:w-auto">
                 <Link href={`/${locale}/dashboard/leads`}>
                   {t("dashboard.hotLeads.viewAll")}
                 </Link>
@@ -199,7 +199,7 @@ export default async function DashboardPage({
         </Card>
 
         {/* Sidebar Feed: AI Insights - 3 columns */}
-        <div className="col-span-3 space-y-4">
+        <div className="lg:col-span-3 space-y-4">
           <AIInsights locale={locale as Locale} />
         </div>
       </div>

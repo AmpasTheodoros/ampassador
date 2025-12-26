@@ -341,3 +341,114 @@ All colors MUST be HSL.
   }
 
 }
+
+
+/* Hide UploadThing's technical allowedContent text */
+[data-ut-element="allowed-content"] {
+  display: none !important;
+}
+
+/* Style UploadThing button - target both label and button elements */
+.upload-button-wrapper [data-ut-element="button"],
+.upload-button-wrapper label[data-ut-element="button"] {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+  padding: 0.625rem 1.5rem !important;
+  min-height: 2.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.2s ease-in-out !important;
+  border: none !important;
+  cursor: pointer !important;
+  /* Mobile-friendly: full width on mobile, auto on larger screens */
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* On larger screens, make button auto-width */
+@media (min-width: 640px) {
+  .upload-button-wrapper [data-ut-element="button"],
+  .upload-button-wrapper label[data-ut-element="button"] {
+    width: auto !important;
+    min-width: auto !important;
+  }
+}
+
+/* Override UploadThing's default blue colors */
+.upload-button-wrapper [data-ut-element="button"][data-state="ready"],
+.upload-button-wrapper label[data-ut-element="button"][data-state="ready"] {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Ensure text inside is readable - override all text-white classes */
+.upload-button-wrapper [data-ut-element="button"] span,
+.upload-button-wrapper label[data-ut-element="button"] span,
+.upload-button-wrapper [data-ut-element="button"] .text-white,
+.upload-button-wrapper label[data-ut-element="button"] .text-white {
+  color: hsl(var(--primary-foreground)) !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Ensure icon is visible */
+.upload-button-wrapper [data-ut-element="button"] svg,
+.upload-button-wrapper label[data-ut-element="button"] svg {
+  color: hsl(var(--primary-foreground)) !important;
+  stroke: hsl(var(--primary-foreground)) !important;
+}
+
+.upload-button-wrapper [data-ut-element="button"]:hover:not(:disabled),
+.upload-button-wrapper label[data-ut-element="button"]:hover:not(:disabled) {
+  opacity: 0.9 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 639px) {
+  .upload-button-wrapper [data-ut-element="button"],
+  .upload-button-wrapper label[data-ut-element="button"] {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    min-height: 2.75rem !important;
+  }
+  
+  .upload-button-wrapper [data-ut-element="button"] span,
+  .upload-button-wrapper label[data-ut-element="button"] span {
+    font-size: 0.875rem !important;
+  }
+}
+
+.upload-button-wrapper [data-ut-element="button"]:active:not(:disabled),
+.upload-button-wrapper label[data-ut-element="button"]:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+.upload-button-wrapper [data-ut-element="button"]:disabled,
+.upload-button-wrapper label[data-ut-element="button"]:disabled,
+.upload-button-wrapper [data-ut-element="button"][data-state="disabled"],
+.upload-button-wrapper label[data-ut-element="button"][data-state="disabled"] {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Animation for success state */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

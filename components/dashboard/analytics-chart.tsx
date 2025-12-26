@@ -91,9 +91,9 @@ export function AnalyticsChart({ data, locale }: AnalyticsChartProps) {
   const conversionRate = totalLeads > 0 ? (totalConversions / totalLeads) * 100 : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t("dashboard.analytics.totalRevenue")}</CardTitle>
@@ -137,7 +137,7 @@ export function AnalyticsChart({ data, locale }: AnalyticsChartProps) {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
         {/* Revenue Trend Chart */}
         <Card>
           <CardHeader>
@@ -147,7 +147,7 @@ export function AnalyticsChart({ data, locale }: AnalyticsChartProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
@@ -189,7 +189,7 @@ export function AnalyticsChart({ data, locale }: AnalyticsChartProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full">
+            <div className="h-[250px] sm:h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { getTranslations } from "@/lib/translations";
 import type { Locale } from "@/lib/i18n";
 import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 const Header = ({ locale }: { locale: Locale }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +15,7 @@ const Header = ({ locale }: { locale: Locale }) => {
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { isSignedIn } = useUser();
   const t = getTranslations(locale);
 
   useEffect(() => {
@@ -58,6 +60,14 @@ const Header = ({ locale }: { locale: Locale }) => {
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
     router.push(newPath);
     setIsLangMenuOpen(false);
+  };
+
+  const handleGetStarted = () => {
+    if (isSignedIn) {
+      router.push(`/${locale}/dashboard`);
+    } else {
+      router.push(`/${locale}/sign-up`);
+    }
   };
 
   const navItems = [
@@ -146,7 +156,7 @@ const Header = ({ locale }: { locale: Locale }) => {
             <Button
               variant="hero"
               size="lg"
-              onClick={() => scrollToSection("contact")}
+              onClick={handleGetStarted}
             >
               {t("header.getStarted")}
             </Button>
@@ -220,7 +230,7 @@ const Header = ({ locale }: { locale: Locale }) => {
                   variant="hero"
                   size="lg"
                   className="w-full"
-                  onClick={() => scrollToSection("contact")}
+                  onClick={handleGetStarted}
                 >
                   {t("header.getStarted")}
                 </Button>

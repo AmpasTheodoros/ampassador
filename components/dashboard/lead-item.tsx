@@ -107,12 +107,12 @@ export function LeadItem({ lead, locale }: LeadItemProps) {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b last:border-0 hover:bg-muted/50 transition-colors rounded-lg">
-      <div className="flex gap-4 items-center flex-1 min-w-0">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border-b last:border-0 hover:bg-muted/50 transition-colors rounded-lg gap-3 sm:gap-0">
+      <div className="flex gap-3 sm:gap-4 items-start sm:items-center flex-1 min-w-0 w-full sm:w-auto">
         {/* Priority Indicator */}
         <div
           className={cn(
-            "w-2 h-2 rounded-full flex-shrink-0",
+            "w-2 h-2 rounded-full flex-shrink-0 mt-1.5 sm:mt-0",
             lead.priorityScore && lead.priorityScore > 7
               ? "bg-destructive"
               : lead.priorityScore && lead.priorityScore > 5
@@ -122,8 +122,8 @@ export function LeadItem({ lead, locale }: LeadItemProps) {
         />
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <p className="font-semibold truncate">{lead.name}</p>
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <p className="font-semibold truncate text-sm sm:text-base">{lead.name}</p>
             {lead.priorityScore && (
               <Badge
                 variant={getPriorityVariant(lead.priorityScore)}
@@ -135,26 +135,26 @@ export function LeadItem({ lead, locale }: LeadItemProps) {
           </div>
           
           {lead.aiSummary && (
-            <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
+            <p className="text-xs text-muted-foreground line-clamp-2 sm:line-clamp-1 mb-2">
               {lead.aiSummary}
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
             {lead.email && (
               <div className="flex items-center gap-1">
-                <Mail className="h-3 w-3" />
-                <span className="truncate max-w-[150px]">{lead.email}</span>
+                <Mail className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate max-w-[120px] sm:max-w-[150px]">{lead.email}</span>
               </div>
             )}
             {lead.phone && (
               <div className="flex items-center gap-1">
-                <Phone className="h-3 w-3" />
-                <span>{lead.phone}</span>
+                <Phone className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{lead.phone}</span>
               </div>
             )}
             <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
+              <Clock className="h-3 w-3 flex-shrink-0" />
               <span>{getTimeAgo(lead.createdAt, t)}</span>
             </div>
             {lead.source && (
@@ -167,7 +167,7 @@ export function LeadItem({ lead, locale }: LeadItemProps) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-2 flex-shrink-0 ml-4 items-center">
+      <div className="flex flex-wrap sm:flex-nowrap gap-2 flex-shrink-0 w-full sm:w-auto sm:ml-4 items-stretch sm:items-center">
         <QuickBill 
           lead={{
             id: lead.id,
@@ -183,17 +183,20 @@ export function LeadItem({ lead, locale }: LeadItemProps) {
           variant="outline"
           onClick={handleIgnore}
           disabled={isIgnoring || isConverting}
+          className="flex-1 sm:flex-initial"
         >
-          <X className="h-4 w-4 mr-1" />
-          {t("dashboard.leads.actions.skip")}
+          <X className="h-4 w-4 sm:mr-1" />
+          <span className="hidden sm:inline">{t("dashboard.leads.actions.skip")}</span>
         </Button>
         <Button
           size="sm"
           onClick={handleConvert}
           disabled={isIgnoring || isConverting}
+          className="flex-1 sm:flex-initial"
         >
-          <CheckCircle2 className="h-4 w-4 mr-1" />
-          {t("dashboard.leads.actions.convertToMatter")}
+          <CheckCircle2 className="h-4 w-4 sm:mr-1" />
+          <span className="hidden sm:inline">{t("dashboard.leads.actions.convertToMatter")}</span>
+          <span className="sm:hidden">{locale === "el" ? "Μετατροπή" : "Convert"}</span>
         </Button>
       </div>
     </div>

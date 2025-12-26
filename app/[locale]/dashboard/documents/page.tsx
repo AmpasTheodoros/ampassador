@@ -6,6 +6,7 @@ import { FileText, MessageSquare, Calendar, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { getTranslations } from "@/lib/translations";
 import type { Locale } from "@/lib/i18n";
+import { DocumentUpload } from "@/components/dashboard/document-upload";
 
 export default async function DocumentsPage({
   params,
@@ -65,19 +66,22 @@ export default async function DocumentsPage({
   });
 
   return (
-    <div className="space-y-8 p-8">
-      <div className="flex justify-between items-end">
+    <div className="space-y-6 lg:space-y-8 p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
             {locale === "el" ? "Έγγραφα" : "Documents"}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             {locale === "el"
               ? "Διαχειριστείτε και αναλύστε τα νομικά σας έγγραφα"
               : "Manage and analyze your legal documents"}
           </p>
         </div>
       </div>
+
+      {/* Upload Component */}
+      <DocumentUpload locale={locale} />
 
       <Card>
         <CardHeader>
@@ -96,24 +100,24 @@ export default async function DocumentsPage({
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {documents.map((doc) => {
                 const analysis = doc.aiAnalysis as any;
                 return (
                   <div
                     key={doc.id}
-                    className="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+                    className="border rounded-lg p-3 sm:p-4 hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex justify-between items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <FileText className="h-5 w-5 text-muted-foreground" />
-                          <h3 className="font-semibold text-lg">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+                      <div className="flex-1 min-w-0 w-full sm:w-auto">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                          <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                          <h3 className="font-semibold text-base sm:text-lg truncate flex-1 min-w-0">
                             {doc.fileName}
                           </h3>
                           {analysis?.urgency && (
                             <span
-                              className={`text-xs px-2 py-1 rounded-full ${
+                              className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${
                                 analysis.urgency === "HIGH"
                                   ? "bg-destructive/10 text-destructive"
                                   : analysis.urgency === "MEDIUM"
@@ -127,20 +131,20 @@ export default async function DocumentsPage({
                         </div>
 
                         {analysis?.summary && (
-                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                          <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
                             {analysis.summary}
                           </p>
                         )}
 
-                        <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                        <div className="flex flex-wrap gap-2 sm:gap-4 text-xs text-muted-foreground">
                           {doc.matter && (
-                            <div className="flex items-center gap-1">
-                              <span className="font-medium">
+                            <div className="flex items-center gap-1 min-w-0">
+                              <span className="font-medium flex-shrink-0">
                                 {locale === "el" ? "Υπόθεση:" : "Matter:"}
                               </span>
                               <Link
                                 href={`/${locale}/dashboard/matters/${doc.matter.id}`}
-                                className="text-primary hover:underline"
+                                className="text-primary hover:underline truncate"
                               >
                                 {doc.matter.title}
                               </Link>
@@ -148,7 +152,7 @@ export default async function DocumentsPage({
                           )}
 
                           {doc.deadlines.length > 0 && (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 flex-shrink-0">
                               <Calendar className="h-3 w-3" />
                               <span>
                                 {new Date(
@@ -166,15 +170,15 @@ export default async function DocumentsPage({
                           )}
 
                           {analysis?.legalCategory && (
-                            <span className="px-2 py-0.5 rounded bg-muted">
+                            <span className="px-2 py-0.5 rounded bg-muted flex-shrink-0">
                               {analysis.legalCategory}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" asChild>
+                      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto flex-shrink-0">
+                        <Button variant="outline" size="sm" asChild className="w-full sm:w-auto">
                           <a
                             href={doc.fileUrl}
                             target="_blank"
@@ -183,12 +187,12 @@ export default async function DocumentsPage({
                             {locale === "el" ? "Άνοιγμα" : "Open"}
                           </a>
                         </Button>
-                        <Button size="sm" asChild>
+                        <Button size="sm" asChild className="w-full sm:w-auto">
                           <Link
                             href={`/${locale}/dashboard/documents/${doc.id}`}
                           >
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            {locale === "el" ? "Chat" : "Chat"}
+                            <MessageSquare className="h-4 w-4 sm:mr-2" />
+                            <span className="hidden sm:inline">{locale === "el" ? "Chat" : "Chat"}</span>
                           </Link>
                         </Button>
                       </div>
