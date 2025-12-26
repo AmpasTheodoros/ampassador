@@ -222,7 +222,26 @@
       "noLeads": "No leads found",
       "unnamedLead": "Unnamed Lead",
       "organizationRequired": "Organization Required",
-      "organizationRequiredDescription": "You need to be part of an organization to access leads."
+      "organizationRequiredDescription": "You need to be part of an organization to access leads.",
+      "timeAgo": {
+        "now": "Now",
+        "minutesAgo": "{minutes}m ago",
+        "hoursAgo": "{hours}h ago",
+        "daysAgo": "{days}d ago"
+      },
+      "actions": {
+        "skip": "Skip",
+        "convertToMatter": "Convert to Matter",
+        "quickBill": "Quick Bill",
+        "quickBillButton": "Quick Payment ({amount}€)",
+        "creating": "Creating...",
+        "advancePaymentForCase": "Advance payment for case: {summary}",
+        "advancePaymentFor": "Advance payment for case: {name}",
+        "checkoutSessionFailed": "Failed to create checkout session",
+        "checkoutUrlNotReturned": "Checkout URL was not returned",
+        "checkoutSessionError": "Failed to create checkout session. Please try again."
+      },
+      "convertError": "Failed to convert lead to matter. Please try again."
     },
     "matters": {
       "title": "Matters",
@@ -247,27 +266,6 @@
       "revenueLabel": "Revenue",
       "newLeadsLabel": "New Leads",
       "conversionsLabel": "Conversions"
-    },
-    "leads": {
-      "timeAgo": {
-        "now": "Now",
-        "minutesAgo": "{minutes}m ago",
-        "hoursAgo": "{hours}h ago",
-        "daysAgo": "{days}d ago"
-      },
-      "actions": {
-        "skip": "Skip",
-        "convertToMatter": "Convert to Matter",
-        "quickBill": "Quick Bill",
-        "quickBillButton": "Quick Payment ({amount}€)",
-        "creating": "Creating...",
-        "advancePaymentForCase": "Advance payment for case: {summary}",
-        "advancePaymentFor": "Advance payment for case: {name}",
-        "checkoutSessionFailed": "Failed to create checkout session",
-        "checkoutUrlNotReturned": "Checkout URL was not returned",
-        "checkoutSessionError": "Failed to create checkout session. Please try again."
-      },
-      "convertError": "Failed to convert lead to matter. Please try again."
     },
     "aiInsights": {
       "title": "AI Legal Assistant",

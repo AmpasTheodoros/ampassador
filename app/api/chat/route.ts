@@ -3,6 +3,13 @@ import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { requireOrgId } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import { findRelevantChunks } from "@/lib/document-chunking";
+import {
+  extractMessageContent,
+  truncateContext,
+  buildAnalysisContext,
+} from "@/lib/chat-utils";
 
 /**
  * Chat with Document API
@@ -40,6 +47,7 @@ export async function POST(req: NextRequest) {
         fileName: true,
         fileUrl: true,
         aiAnalysis: true,
+        extractionStatus: true,
       },
     });
 
@@ -50,66 +58,109 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get document content
-    // For MVP: We'll use the AI analysis we already have, and reference the file URL
-    // In production, you can store extracted text in the database for better performance
-    let docContext = "";
-    
-    // Build context from AI analysis if available
-    if (document.aiAnalysis && typeof document.aiAnalysis === 'object') {
-      const analysis = document.aiAnalysis as any;
-      
-      if (analysis.summary) {
-        docContext += `Περίληψη: ${analysis.summary}\n\n`;
-      }
-      
-      if (analysis.deadlines && Array.isArray(analysis.deadlines)) {
-        docContext += `Προθεσμίες:\n`;
-        analysis.deadlines.forEach((d: any) => {
-          docContext += `- ${d.date}: ${d.description}\n`;
+    // Get the latest user message (query) using utility function
+    const userMessages = messages.filter((m) => m.role === "user");
+    const latestMessage = userMessages[userMessages.length - 1];
+    const latestQuery = extractMessageContent(latestMessage);
+
+    if (!latestQuery || latestQuery.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Query is required" },
+        { status: 400 }
+      );
+    }
+
+    // Build context using RAG (Retrieval-Augmented Generation)
+    let docContext = buildAnalysisContext(document.aiAnalysis);
+
+    // Step 2: Use RAG to find relevant chunks (if document was indexed)
+    let relevantChunksText = "";
+    let sourceCitations: string[] = [];
+
+    if (document.extractionStatus === "COMPLETED") {
+      try {
+        // Fetch chunks for this document (with potential metadata filtering)
+        const chunks = await prisma.documentChunk.findMany({
+          where: {
+            documentId: document.id,
+            // Could add filters here based on query intent
+            // e.g., pageStart: { gte: targetPage } if query mentions specific page
+          },
+          orderBy: { chunkIndex: "asc" },
+          // Limit to reasonable number for performance
+          take: 1000, // Max chunks to consider
         });
-        docContext += `\n`;
-      }
-      
-      if (analysis.parties) {
-        docContext += `Μέρη:\n`;
-        if (analysis.parties.plaintiff) {
-          docContext += `- Ενάγων/Αιτών: ${analysis.parties.plaintiff}\n`;
-        }
-        if (analysis.parties.defendant) {
-          docContext += `- Εναγόμενος/Καθ' ου: ${analysis.parties.defendant}\n`;
-        }
-        if (analysis.parties.others && Array.isArray(analysis.parties.others)) {
-          analysis.parties.others.forEach((p: string) => {
-            docContext += `- ${p}\n`;
+
+        if (chunks.length > 0) {
+          // Generate embedding for the user's query
+          const openaiClient = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
           });
+
+          const queryEmbeddingResponse = await openaiClient.embeddings.create({
+            model: "text-embedding-3-small",
+            input: latestQuery,
+          });
+
+          const queryEmbedding = queryEmbeddingResponse.data[0]?.embedding;
+
+          if (queryEmbedding) {
+            // Find relevant chunks using vector similarity
+            const chunksWithEmbeddings = chunks.map((chunk: any) => ({
+              ...chunk,
+              embedding: (chunk.embedding as number[]) || [],
+            }));
+
+            const relevant = findRelevantChunks(
+              queryEmbedding,
+              chunksWithEmbeddings,
+              5, // top 5 chunks
+              0.5 // minimum similarity threshold
+            );
+
+            // Build context from relevant chunks
+            if (relevant.length > 0) {
+              relevantChunksText = "\n\nΣχετικά αποσπάσματα από το έγγραφο:\n\n";
+              relevant.forEach((item, idx) => {
+                const chunk = item.chunk as any;
+                const pageInfo =
+                  chunk.pageStart && chunk.pageEnd
+                    ? ` (σελίδες ${chunk.pageStart}-${chunk.pageEnd})`
+                    : chunk.pageStart
+                      ? ` (σελίδα ${chunk.pageStart})`
+                      : "";
+
+                relevantChunksText += `[Απόσπασμα ${idx + 1}${pageInfo}]:\n${chunk.text || ""}\n\n`;
+
+                // Store citation
+                if (chunk.pageStart) {
+                  sourceCitations.push(
+                    `Σελίδα ${chunk.pageStart}${chunk.pageEnd && chunk.pageEnd !== chunk.pageStart ? `-${chunk.pageEnd}` : ""}`
+                  );
+                }
+              });
+            }
+          }
         }
-        docContext += `\n`;
-      }
-      
-      if (analysis.keyPoints && Array.isArray(analysis.keyPoints)) {
-        docContext += `Βασικά σημεία:\n`;
-        analysis.keyPoints.forEach((point: string) => {
-          docContext += `- ${point}\n`;
-        });
-        docContext += `\n`;
+      } catch (ragError) {
+        console.error("RAG Error:", ragError);
+        // Continue without RAG if it fails
       }
     }
-    
-    // Add file reference for AI to potentially access
-    docContext += `\nΤο πλήρες έγγραφο είναι διαθέσιμο στο: ${document.fileName}`;
-    
-    // For more detailed questions, we can instruct the AI to reference the file URL
-    // This allows the AI to potentially read more details if needed
 
-    // Stream AI response based on document context
-    const result = streamText({
-      model: openai("gpt-4o"),
-      system: `Είσαι ο "360 Legal Assistant" - ένας εξειδικευμένος νομικός βοηθός. Σου δίνεται το παρακάτω νομικό κείμενο:
+    // Combine all context
+    docContext += relevantChunksText;
+
+    // Truncate context if too large (context window management)
+    const { truncated: finalContext, wasTruncated } = truncateContext(docContext, 100000);
+
+    // Build system prompt with context
+    const systemPrompt = `Είσαι ο "360 Legal Assistant" - ένας εξειδικευμένος νομικός βοηθός. Σου δίνεται το παρακάτω νομικό κείμενο:
     
 --- 
-${docContext}
+${finalContext}
 ---
+${wasTruncated ? "\n[Σημείωση: Το έγγραφο είναι μεγάλο και έχει περικοπεί για να χωρέσει στο context window.]" : ""}
 
 Οδηγίες:
 1. Απάντησε ΜΟΝΟ βάσει του παραπάνω κειμένου. Μην προσθέτεις πληροφορίες που δεν υπάρχουν στο έγγραφο.
@@ -118,8 +169,15 @@ ${docContext}
 4. Έχε επαγγελματικό, φιλικό ύφος.
 5. Αν ρωτάνε για ημερομηνίες ή προθεσμίες, να τις αναφέρεις με σαφήνεια.
 6. Αν ρωτάνε για μέρη (ενάγων, εναγόμενος), να τα αναφέρεις με ακρίβεια.
+7. Αν αναφέρονται σελίδες στα αποσπάσματα, μπορείς να τις αναφέρεις στην απάντησή σου για ακρίβεια.
+8. **ΣΗΜΑΝΤΙΚΟ**: Αυτή η υπηρεσία δεν παρέχει νομικές συμβουλές. Είναι ένα εργαλείο βοήθειας για ανάλυση εγγράφων.
 
-Απάντησε πάντα στα Ελληνικά, εκτός αν ο χρήστης ζητήσει ρητά απάντηση σε άλλη γλώσσα.`,
+Απάντησε πάντα στα Ελληνικά, εκτός αν ο χρήστης ζητήσει ρητά απάντηση σε άλλη γλώσσα.`;
+
+    // Stream AI response based on document context
+    const result = streamText({
+      model: openai("gpt-4o"),
+      system: systemPrompt,
       messages: await convertToModelMessages(messages || []),
       temperature: 0.3, // Lower temperature for more accurate, consistent responses
     });

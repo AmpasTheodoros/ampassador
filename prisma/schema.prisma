@@ -202,24 +202,31 @@ enum UserRole {
 // ============================================
 
 model Document {
-  id          String   @id @default(cuid())
-  clerkOrgId  String
-  firm        Firm     @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
-  matterId    String?
-  matter      Matter?  @relation(fields: [matterId], references: [id], onDelete: SetNull)
-  fileName    String
-  fileUrl     String   // URL από Uploadthing, S3, ή άλλο storage
-  fileSize    Int?     // File size in bytes
-  fileType    String?  // MIME type (e.g., "application/pdf")
-  aiAnalysis  Json?    // JSON: { summary, deadlines, parties, urgency, ... }
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  clerkOrgId      String
+  firm            Firm     @relation(fields: [clerkOrgId], references: [clerkOrgId], onDelete: Cascade)
+  matterId        String?
+  matter          Matter?  @relation(fields: [matterId], references: [id], onDelete: SetNull)
+  fileName        String
+  fileUrl         String   // URL από Uploadthing, S3, ή άλλο storage
+  fileSize        Int?     // File size in bytes
+  fileType        String?  // MIME type (e.g., "application/pdf")
+  aiAnalysis      Json?    // JSON: { summary, deadlines, parties, urgency, ... }
+  // Extraction metadata (minimal retention approach)
+  pageCount       Int?     // Number of pages in the document
+  extractionStatus String?  // "PENDING", "COMPLETED", "FAILED", "SKIPPED"
+  extractionError String?  // Error message if extraction failed
+  textHash        String?  // SHA-256 hash of extracted text (for deduplication, no plaintext stored)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  deadlines   Deadline[] // Deadlines extracted from this document
+  deadlines       Deadline[] // Deadlines extracted from this document
+  chunks         DocumentChunk[] // Text chunks with embeddings for RAG
 
   @@index([clerkOrgId])
   @@index([matterId])
   @@index([createdAt])
+  @@index([textHash])
 }
 
 model Deadline {
@@ -249,4 +256,27 @@ enum DeadlineStatus {
   COMPLETED
   OVERDUE
   CANCELLED
+}
+
+// Document chunks for RAG (Retrieval-Augmented Generation)
+// Stores embeddings and chunk metadata, NOT full text (minimal retention)
+model DocumentChunk {
+  id          String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunkIndex Int      // Order of chunk in document (0-based)
+  // Chunk text stored temporarily during processing, then discarded
+  // Only embeddings and metadata are retained
+  text       String?  // Optional: first 500 chars for preview (can be null for full privacy)
+  embedding  Json     // Vector embedding (array of floats) from OpenAI
+  // Metadata for retrieval
+  pageStart  Int?     // Starting page number (if available)
+  pageEnd    Int?     // Ending page number (if available)
+  charStart  Int?     // Character offset in original document
+  charEnd    Int?     // Character end offset
+  createdAt  DateTime @default(now())
+
+  @@index([documentId])
+  @@index([documentId, chunkIndex])
+  @@index([documentId, pageStart]) // For page-based filtering
 }

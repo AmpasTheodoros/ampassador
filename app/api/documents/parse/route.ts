@@ -5,6 +5,13 @@ import { generateObject } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import { LEGAL_AI_PROMPT } from "@/lib/ai-prompts";
+import { extractDocumentText, isLikelyScannedPdf } from "@/lib/document-extraction";
+import { chunkDocument, generateEmbeddings } from "@/lib/document-chunking";
+import {
+  createDeadlinesFromAnalysis,
+  validateFileUrl,
+  validateAiAnalysis,
+} from "@/lib/document-utils";
 
 /**
  * Document Parsing API
@@ -93,6 +100,18 @@ export async function POST(req: NextRequest) {
 
     const { fileUrl, fileName, matterId, fileSize, fileType } = validation.data;
 
+    // Validate file URL security
+    const urlValidation = validateFileUrl(fileUrl);
+    if (!urlValidation.valid) {
+      return NextResponse.json(
+        {
+          error: "Invalid file URL",
+          message: urlValidation.error,
+        },
+        { status: 400 }
+      );
+    }
+
     // Verify firm exists
     const firm = await prisma.firm.findUnique({
       where: { clerkOrgId },
@@ -123,15 +142,53 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // AI Analysis: Extract structured data from the document
-    let aiAnalysis: z.infer<typeof aiAnalysisSchema> | null = null;
+    // Step 1: Extract text from document (server-side, deterministic)
+    let extractedText: string | null = null;
+    let pageCount: number | null = null;
+    let textHash: string | null = null;
+    let extractionStatus = "PENDING";
+    let extractionError: string | null = null;
 
     try {
-      const { object } = await generateObject({
-        model: openai("gpt-4o"), // Use gpt-4o for better Greek legal understanding
-        system: LEGAL_AI_PROMPT,
-        schema: aiAnalysisSchema,
-        prompt: `Ανάλυσε αυτό το νομικό έγγραφο (PDF, DOCX, ή άλλο) από το URL: ${fileUrl}
+      const extracted = await extractDocumentText(fileUrl, fileType || undefined);
+      extractedText = extracted.text;
+      pageCount = extracted.pageCount;
+      textHash = extracted.hash;
+      extractionStatus = "COMPLETED";
+
+      // Check if PDF is likely scanned (image-based)
+      if (fileType?.includes("pdf") && isLikelyScannedPdf(extractedText, fileSize || undefined)) {
+        extractionError = "Document appears to be scanned (image-based). OCR not yet implemented.";
+        // Continue with limited text extraction
+      }
+    } catch (extractionError_) {
+      console.error("Text Extraction Error:", extractionError_);
+      extractionStatus = "FAILED";
+      extractionError =
+        extractionError_ instanceof Error
+          ? extractionError_.message
+          : "Failed to extract text from document";
+      // Continue without text extraction - document will be saved but without chunks
+    }
+
+    // Step 2: AI Analysis using extracted text (not URL)
+    let aiAnalysis: z.infer<typeof aiAnalysisSchema> | null = null;
+
+    if (extractedText && extractedText.length > 50) {
+      try {
+        // Limit text for analysis to first 50,000 chars (cost optimization)
+        const textForAnalysis =
+          extractedText.length > 50000
+            ? extractedText.substring(0, 50000) + "\n\n[... έγγραφο συνεχίζεται ...]"
+            : extractedText;
+
+        const { object } = await generateObject({
+          model: openai("gpt-4o"), // Use gpt-4o for better Greek legal understanding
+          system: LEGAL_AI_PROMPT,
+          schema: aiAnalysisSchema,
+          prompt: `Ανάλυσε το εξής κείμενο νομικού εγγράφου:
+
+${textForAnalysis}
 
 Εξαγωγή πληροφοριών:
 1. Περίληψη: Μία παράγραφος που περιγράφει το επίδικο αντικείμενο
@@ -141,20 +198,127 @@ export async function POST(req: NextRequest) {
 3. Μέρη: Εξάγει τα μέρη (ενάγων/αιτών, εναγόμενος/καθ' ου, και άλλα)
 4. Κατηγορία: Καθορίσε τη νομική κατηγορία (ΑΣΤΙΚΟ, ΠΟΙΝΙΚΟ, ΕΜΠΟΡΙΚΟ, ΔΙΟΙΚΗΤΙΚΟ, ΕΡΓΑΤΙΚΟ)
 5. Επείγον: Κατάταξε το επίπεδο επείγοντος (LOW/MEDIUM/HIGH) και urgencyScore (1-10)
-   - HIGH: Αν υπάρχουν λέξεις όπως "κατάσχεση", "πλειστηριασμός", "ασφαλιστικά μέτρα"
+   - HIGH: Αν υπάρχουν λέξεις όπως "κατάσχεση", "πλειστηριασμός", "ασφαλιστικά μέτρα"`,
+          temperature: 0.2, // Lower temperature for more consistent extraction
+        });
 
-Αν το έγγραφο δεν είναι προσβάσιμο ή δεν μπορεί να διαβαστεί, επέστρεψε κενές τιμές.`,
-        temperature: 0.2, // Lower temperature for more consistent extraction
-      });
-
-      aiAnalysis = object;
-    } catch (aiError) {
-      console.error("AI Analysis Error:", aiError);
-      // Continue without AI analysis if it fails - document will be saved without analysis
-      // This allows the document to be uploaded even if AI parsing fails
+        // Validate AI response
+        const validation = validateAiAnalysis(object, aiAnalysisSchema);
+        if (!validation.valid) {
+          console.error("AI returned invalid data:", validation.error);
+          // Continue without analysis rather than failing completely
+        } else {
+          aiAnalysis = validation.data;
+        }
+      } catch (aiError) {
+        console.error("AI Analysis Error:", aiError);
+        // Continue without AI analysis if it fails
+      }
+    } else if (extractedText === null) {
+      extractionStatus = "SKIPPED";
+      extractionError = "Text extraction not attempted or failed";
     }
 
-    // Create document record in database
+    // Step 3: Chunk document and generate embeddings (if text was extracted)
+    let chunksCreated = 0;
+    if (extractedText && extractedText.length > 100) {
+      try {
+        // Chunk the document
+        const chunks = chunkDocument(extractedText, pageCount || undefined);
+
+        if (chunks.length > 0) {
+          // Generate embeddings
+          const chunksWithEmbeddings = await generateEmbeddings(chunks);
+
+          // Create document record first (needed for foreign key)
+          const document = await prisma.document.create({
+            data: {
+              clerkOrgId,
+              matterId: matterId || null,
+              fileName,
+              fileUrl,
+              fileSize: fileSize || null,
+              fileType: fileType || null,
+              aiAnalysis: aiAnalysis ? (aiAnalysis as any) : null,
+              pageCount,
+              extractionStatus,
+              extractionError,
+              textHash,
+            },
+            include: {
+              matter: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+            },
+          });
+
+          // Store chunks (WITHOUT full text - minimal retention)
+          // Only store embeddings, metadata, and optional preview
+          await prisma.documentChunk.createMany({
+            data: chunksWithEmbeddings.map((chunk) => ({
+              documentId: document.id,
+              chunkIndex: chunk.chunkIndex,
+              text: chunk.preview || null, // Only store preview (first 500 chars), not full text
+              embedding: chunk.embedding as any, // Store as JSON
+              pageStart: chunk.pageStart || null,
+              pageEnd: chunk.pageEnd || null,
+              charStart: chunk.charStart,
+              charEnd: chunk.charEnd,
+            })),
+          });
+
+          chunksCreated = chunksWithEmbeddings.length;
+
+          // Create deadlines using utility function (DRY)
+          const createdDeadlines = await createDeadlinesFromAnalysis({
+            aiAnalysis,
+            documentId: document.id,
+            clerkOrgId,
+            matterId: matterId || null,
+            fileName,
+          });
+
+          return NextResponse.json(
+            {
+              success: true,
+              document: {
+                id: document.id,
+                fileName: document.fileName,
+                fileUrl: document.fileUrl,
+                matterId: document.matterId,
+                aiAnalysis: document.aiAnalysis,
+                pageCount: document.pageCount,
+                extractionStatus: document.extractionStatus,
+                createdAt: document.createdAt,
+                matter: document.matter,
+              },
+              chunksCreated,
+              deadlinesCreated: createdDeadlines.length,
+              deadlines: createdDeadlines.map((d) => ({
+                id: d.id,
+                title: d.title,
+                dueDate: d.dueDate,
+                status: d.status,
+              })),
+              message: "Document parsed, analyzed, and indexed successfully",
+              warning:
+                chunksCreated === 0 && extractionStatus === "COMPLETED"
+                  ? "Document saved but chat functionality will be limited - chunking failed"
+                  : undefined,
+            },
+            { status: 201 }
+          );
+        }
+      } catch (chunkError) {
+        console.error("Chunking/Embedding Error:", chunkError);
+        // Continue to create document without chunks
+      }
+    }
+
+    // Fallback: Create document without chunks (if extraction/chunking failed)
     const document = await prisma.document.create({
       data: {
         clerkOrgId,
@@ -164,6 +328,10 @@ export async function POST(req: NextRequest) {
         fileSize: fileSize || null,
         fileType: fileType || null,
         aiAnalysis: aiAnalysis ? (aiAnalysis as any) : null,
+        pageCount,
+        extractionStatus,
+        extractionError,
+        textHash,
       },
       include: {
         matter: {
@@ -175,43 +343,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Extract deadlines and create Deadline records
-    const createdDeadlines = [];
-    if (aiAnalysis?.deadlines && aiAnalysis.deadlines.length > 0) {
-      for (const deadlineData of aiAnalysis.deadlines) {
-        try {
-          // Parse the date string to DateTime
-          const dueDate = new Date(deadlineData.date);
-          
-          // Skip if date is invalid
-          if (isNaN(dueDate.getTime())) {
-            console.warn(`Invalid date format: ${deadlineData.date}`);
-            continue;
-          }
-
-          // Determine status based on due date
-          const now = new Date();
-          const status = dueDate < now ? "OVERDUE" : "PENDING";
-
-          const deadline = await prisma.deadline.create({
-            data: {
-              clerkOrgId,
-              matterId: matterId || null,
-              documentId: document.id,
-              title: deadlineData.description,
-              dueDate,
-              description: `Εξήχθη αυτόματα από το έγγραφο: ${fileName}`,
-              status,
-            },
-          });
-
-          createdDeadlines.push(deadline);
-        } catch (deadlineError) {
-          console.error("Error creating deadline:", deadlineError);
-          // Continue with other deadlines even if one fails
-        }
-      }
-    }
+    // Create deadlines using utility function (DRY - no duplication)
+    const createdDeadlines = await createDeadlinesFromAnalysis({
+      aiAnalysis,
+      documentId: document.id,
+      clerkOrgId,
+      matterId: matterId || null,
+      fileName,
+    });
 
     return NextResponse.json(
       {
@@ -222,9 +361,12 @@ export async function POST(req: NextRequest) {
           fileUrl: document.fileUrl,
           matterId: document.matterId,
           aiAnalysis: document.aiAnalysis,
+          pageCount: document.pageCount,
+          extractionStatus: document.extractionStatus,
           createdAt: document.createdAt,
           matter: document.matter,
         },
+        chunksCreated,
         deadlinesCreated: createdDeadlines.length,
         deadlines: createdDeadlines.map((d) => ({
           id: d.id,
@@ -232,7 +374,9 @@ export async function POST(req: NextRequest) {
           dueDate: d.dueDate,
           status: d.status,
         })),
-        message: "Document parsed and analyzed successfully",
+        message: extractionStatus === "COMPLETED"
+          ? "Document parsed, analyzed, and indexed successfully"
+          : `Document saved but extraction ${extractionStatus.toLowerCase()}. ${extractionError || ""}`,
       },
       { status: 201 }
     );

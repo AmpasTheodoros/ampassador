@@ -223,7 +223,26 @@
       "noLeads": "Δεν βρέθηκαν leads",
       "unnamedLead": "Lead χωρίς όνομα",
       "organizationRequired": "Απαιτείται Οργανισμός",
-      "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στα leads."
+      "organizationRequiredDescription": "Χρειάζεται να είστε μέλος ενός οργανισμού για να αποκτήσετε πρόσβαση στα leads.",
+      "timeAgo": {
+        "now": "Τώρα",
+        "minutesAgo": "{minutes}λ πριν",
+        "hoursAgo": "{hours}ω πριν",
+        "daysAgo": "{days}μ πριν"
+      },
+      "actions": {
+        "skip": "Παράβλεψη",
+        "convertToMatter": "Μετατροπή σε Υπόθεση",
+        "quickBill": "Άμεση Πληρωμή",
+        "quickBillButton": "Άμεση Πληρωμή ({amount}€)",
+        "creating": "Δημιουργία...",
+        "advancePaymentForCase": "Προκαταβολή για υπόθεση: {summary}",
+        "advancePaymentFor": "Προκαταβολή για υπόθεση: {name}",
+        "checkoutSessionFailed": "Αποτυχία δημιουργίας checkout session",
+        "checkoutUrlNotReturned": "Δεν επιστράφηκε checkout URL",
+        "checkoutSessionError": "Αποτυχία δημιουργίας checkout session. Παρακαλώ δοκιμάστε ξανά."
+      },
+      "convertError": "Αποτυχία μετατροπής του lead σε υπόθεση. Παρακαλώ δοκιμάστε ξανά."
     },
     "matters": {
       "title": "Υποθέσεις",
@@ -248,27 +267,6 @@
       "revenueLabel": "Έσοδα",
       "newLeadsLabel": "Νέα Leads",
       "conversionsLabel": "Μετατροπές"
-    },
-    "leads": {
-      "timeAgo": {
-        "now": "Τώρα",
-        "minutesAgo": "{minutes}λ πριν",
-        "hoursAgo": "{hours}ω πριν",
-        "daysAgo": "{days}μ πριν"
-      },
-      "actions": {
-        "skip": "Παράβλεψη",
-        "convertToMatter": "Μετατροπή σε Υπόθεση",
-        "quickBill": "Άμεση Πληρωμή",
-        "quickBillButton": "Άμεση Πληρωμή ({amount}€)",
-        "creating": "Δημιουργία...",
-        "advancePaymentForCase": "Προκαταβολή για υπόθεση: {summary}",
-        "advancePaymentFor": "Προκαταβολή για υπόθεση: {name}",
-        "checkoutSessionFailed": "Αποτυχία δημιουργίας checkout session",
-        "checkoutUrlNotReturned": "Δεν επιστράφηκε checkout URL",
-        "checkoutSessionError": "Αποτυχία δημιουργίας checkout session. Παρακαλώ δοκιμάστε ξανά."
-      },
-      "convertError": "Αποτυχία μετατροπής του lead σε υπόθεση. Παρακαλώ δοκιμάστε ξανά."
     },
     "aiInsights": {
       "title": "AI Νομικός Βοηθός",

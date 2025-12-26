@@ -81,7 +81,7 @@ export default async function DocumentsPage({
       </div>
 
       {/* Upload Component */}
-      <DocumentUpload locale={locale} />
+      <DocumentUpload locale={locale as Locale} />
 
       <Card>
         <CardHeader>
