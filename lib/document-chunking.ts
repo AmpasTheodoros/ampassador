@@ -32,6 +32,9 @@ export function chunkDocument(
   text: string,
   pageCount?: number
 ): DocumentChunk[] {
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:31',message:'chunkDocument entry',data:{textLength:text.length,pageCount},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
   const chunks: DocumentChunk[] = [];
   const textLength = text.length;
 
@@ -41,8 +44,16 @@ export function chunkDocument(
 
   let charStart = 0;
   let chunkIndex = 0;
+  const MAX_ITERATIONS = 1000000; // Safety limit to prevent infinite loops
+  let iterations = 0;
 
-  while (charStart < textLength) {
+  while (charStart < textLength && iterations < MAX_ITERATIONS) {
+    iterations++;
+    // #region agent log
+    if (iterations % 1000 === 0 || iterations < 10) {
+      fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:45',message:'chunkDocument loop iteration',data:{iterations,charStart,textLength,chunksLength:chunks.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+    }
+    // #endregion
     const charEnd = Math.min(charStart + CHUNK_SIZE, textLength);
 
     // Try to break at sentence boundary (prefer . ! ? followed by space)
@@ -74,21 +85,48 @@ export function chunkDocument(
         ? Math.floor((actualEnd / textLength) * pageCount) + 1
         : undefined;
 
-      chunks.push({
-        text: chunkText,
-        chunkIndex,
-        charStart,
-        charEnd: actualEnd,
-        pageStart,
-        pageEnd,
-      });
+      // #region agent log
+      const prevChunksLength = chunks.length;
+      // #endregion
+      try {
+        chunks.push({
+          text: chunkText,
+          chunkIndex,
+          charStart,
+          charEnd: actualEnd,
+          pageStart,
+          pageEnd,
+        });
+      } catch (error) {
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:77',message:'chunkDocument push error',data:{error:error instanceof Error ? error.message : String(error),iterations,charStart,actualEnd,chunksLength:chunks.length,prevChunksLength,chunkTextLength:chunkText.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+        // #endregion
+        throw error;
+      }
+      // #region agent log
+      if (chunks.length !== prevChunksLength + 1) {
+        fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:85',message:'chunkDocument push failed silently',data:{iterations,charStart,actualEnd,chunksLength:chunks.length,prevChunksLength},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      }
+      // #endregion
     }
 
     // Move to next chunk with overlap
-    charStart = actualEnd - CHUNK_OVERLAP;
+    const prevCharStart = charStart;
+    charStart = Math.max(actualEnd - CHUNK_OVERLAP, charStart + 1); // Ensure we always advance
+    // #region agent log
+    if (charStart <= prevCharStart) {
+      fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:88',message:'chunkDocument no progress detected',data:{iterations,prevCharStart,charStart,actualEnd,CHUNK_OVERLAP},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    }
+    // #endregion
     chunkIndex++;
   }
 
+  // #region agent log
+  if (iterations >= MAX_ITERATIONS) {
+    fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:92',message:'chunkDocument max iterations reached',data:{iterations,charStart,textLength,chunksLength:chunks.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+  }
+  fetch('http://127.0.0.1:7243/ingest/6afa769e-192d-4199-a412-22d081d7b25f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'document-chunking.ts:93',message:'chunkDocument exit',data:{iterations,chunksLength:chunks.length,textLength},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+  // #endregion
   return chunks;
 }
 

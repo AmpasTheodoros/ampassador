@@ -18,17 +18,18 @@ const aiAnalysisSchema = z.object({
   deadlines: z.array(deadlineSchema).optional(),
   parties: z
     .object({
-      plaintiff: z.string().optional(),
-      defendant: z.string().optional(),
-      others: z.array(z.string()).optional(),
+      plaintiff: z.string().nullable().optional(),
+      defendant: z.string().nullable().optional(),
+      others: z.array(z.string()).nullable().optional(),
     })
     .optional(),
   legalCategory: z
     .enum(["ΑΣΤΙΚΟ", "ΠΟΙΝΙΚΟ", "ΕΜΠΟΡΙΚΟ", "ΔΙΟΙΚΗΤΙΚΟ", "ΕΡΓΑΤΙΚΟ"])
+    .nullable()
     .optional(),
   urgency: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
-  urgencyScore: z.number().min(1).max(10).optional(),
-  keyPoints: z.array(z.string()).optional(),
+  urgencyScore: z.number().min(1).max(10).nullable().optional(),
+  keyPoints: z.array(z.string()).nullable().optional(),
 });
 
 type AiAnalysis = z.infer<typeof aiAnalysisSchema>;

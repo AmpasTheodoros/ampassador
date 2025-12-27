@@ -56,13 +56,13 @@ const aiAnalysisSchema = z.object({
     )
     .describe("Λίστα με όλες τις ημερομηνίες προθεσμιών ή δικασίμων που βρέθηκαν στο έγγραφο"),
   parties: z.object({
-    plaintiff: z.string().describe("Ο ενάγων / αιτών").optional(),
-    defendant: z.string().describe("Ο εναγόμενος / καθ' ου").optional(),
-    others: z.array(z.string()).optional().describe("Άλλα μέρη (δικαστές, μάρτυρες, κ.λπ.)"),
+    plaintiff: z.string().nullable().describe("Ο ενάγων / αιτών"),
+    defendant: z.string().nullable().describe("Ο εναγόμενος / καθ' ου"),
+    others: z.array(z.string()).nullable().describe("Άλλα μέρη (δικαστές, μάρτυρες, κ.λπ.)"),
   }),
   legalCategory: z
     .enum(["ΑΣΤΙΚΟ", "ΠΟΙΝΙΚΟ", "ΕΜΠΟΡΙΚΟ", "ΔΙΟΙΚΗΤΙΚΟ", "ΕΡΓΑΤΙΚΟ"])
-    .optional()
+    .nullable()
     .describe("Κατηγορία δικαίου που αφορά το έγγραφο"),
   urgency: z
     .enum(["LOW", "MEDIUM", "HIGH"])
@@ -71,11 +71,11 @@ const aiAnalysisSchema = z.object({
     .number()
     .min(1)
     .max(10)
-    .optional()
+    .nullable()
     .describe("Αριθμητικό επίπεδο επείγοντος: 1=χαμηλό, 10=πολύ επείγον"),
   keyPoints: z
     .array(z.string())
-    .optional()
+    .nullable()
     .describe("Βασικά νομικά σημεία ή θέματα που αναφέρονται στο έγγραφο"),
 });
 
